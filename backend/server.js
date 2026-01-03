@@ -453,6 +453,12 @@ app.put('/api/admin/employees/:id', authMiddleware, adminOnly, async (req, res) 
     }
 });
 
-app.listen(PORT, () => {
-    console.log(`Backend running at http://localhost:${PORT}`);
-});
+// Export the app for Vercel Serverless Functions
+module.exports = app;
+
+// Only listen if running directly (e.g. node server.js)
+if (require.main === module) {
+    app.listen(PORT, () => {
+        console.log(`Backend running at http://localhost:${PORT}`);
+    });
+}
