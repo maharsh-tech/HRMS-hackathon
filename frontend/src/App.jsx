@@ -7,9 +7,19 @@ import LoginPage from './pages/LoginPage';
 import ChangePasswordPage from './pages/ChangePasswordPage';
 import CreateEmployeePage from './pages/CreateEmployeePage';
 import DashboardPage from './pages/DashboardPage';
+import EmployeeDashboardPage from './pages/EmployeeDashboardPage';
+import EmployeesPage from './pages/EmployeesPage';
+import AttendanceReportPage from './pages/AttendanceReportPage';
+import LeaveManagementPage from './pages/LeaveManagementPage';
 
 // Components
 import ProtectedRoute from './components/ProtectedRoute';
+
+// Smart Dashboard - shows different dashboard based on role
+function SmartDashboard() {
+  const { user } = useAuth();
+  return user?.role === 'admin' ? <DashboardPage /> : <EmployeeDashboardPage />;
+}
 
 function App() {
   const { isAuthenticated, loading } = useAuth();
@@ -40,7 +50,34 @@ function App() {
         path="/dashboard"
         element={
           <ProtectedRoute>
-            <DashboardPage />
+            <SmartDashboard />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/employees"
+        element={
+          <ProtectedRoute requireAdmin>
+            <EmployeesPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/attendance"
+        element={
+          <ProtectedRoute requireAdmin>
+            <AttendanceReportPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/leave"
+        element={
+          <ProtectedRoute requireAdmin>
+            <LeaveManagementPage />
           </ProtectedRoute>
         }
       />
