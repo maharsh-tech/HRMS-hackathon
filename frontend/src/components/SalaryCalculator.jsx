@@ -38,13 +38,14 @@ export default function SalaryCalculator({ salaryDetails, onChange, readOnly = f
     const [pfRate, setPfRate] = useState(salaryDetails?.pfRate || 12);
     const [professionalTax, setProfessionalTax] = useState(salaryDetails?.professionalTax || 200);
     const [standardAllowance, setStandardAllowance] = useState(salaryDetails?.standardAllowance || 4167);
-    const [calculated, setCalculated] = useState({});
 
+    // Calculate immediately with current values
+    const calculated = calculateSalary(wage, pfRate, professionalTax, standardAllowance);
+
+    // Notify parent when values change
     useEffect(() => {
-        const result = calculateSalary(wage, pfRate, professionalTax, standardAllowance);
-        setCalculated(result);
         if (onChange) {
-            onChange(result);
+            onChange(calculated);
         }
     }, [wage, pfRate, professionalTax, standardAllowance]);
 
