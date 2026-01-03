@@ -26,35 +26,37 @@ async function seedAdmin() {
 
         const User = mongoose.model('User', userSchema);
 
-        // Check if admin already exists
-        const existingAdmin = await User.findOne({ role: 'admin' });
-        if (existingAdmin) {
-            console.log('Admin already exists:', existingAdmin.employeeId);
-            process.exit(0);
-        }
+        // Delete any existing admin with our target email or any old admin
+        await User.deleteMany({
+            $or: [
+                { email: 'admin@gmail.com' },
+                { role: 'admin' }
+            ]
+        });
+        console.log('Cleaned up existing admin users');
 
-        // Create first admin
-        const hashedPassword = await bcrypt.hash('Admin@123', 10);
+        // Create new admin
+        const hashedPassword = await bcrypt.hash('admin123', 10);
 
         const admin = new User({
-            employeeId: 'OIADMI20260001',
-            email: 'admin@odoo.in',
+            employeeId: 'ADMIN001',
+            email: 'admin@gmail.com',
             password: hashedPassword,
             firstName: 'Admin',
             lastName: 'User',
             role: 'admin',
-            mustChangePassword: false,  // Admin can keep this password
+            mustChangePassword: false,
             joiningDate: new Date()
         });
 
         await admin.save();
 
         console.log('\n=================================');
-        console.log('First Admin Created Successfully!');
+        console.log('Admin Created Successfully!');
         console.log('=================================');
         console.log('Employee ID:', admin.employeeId);
         console.log('Email:', admin.email);
-        console.log('Password: Admin@123');
+        console.log('Password: admin123');
         console.log('=================================\n');
 
         process.exit(0);
@@ -65,3 +67,4 @@ async function seedAdmin() {
 }
 
 seedAdmin();
+
