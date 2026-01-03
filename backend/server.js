@@ -113,19 +113,16 @@ app.post('/api/auth/login', async (req, res) => {
             console.log('User Role:', user.role);
             console.log('Stored Email:', user.email);
             console.log('Stored ID:', user.employeeId);
-            const isMatch = await user.comparePassword(password);
-            console.log('Password Match:', isMatch);
             if (!isMatch) {
-                // Return generic error but log specific
-                console.log('❌ Password mismatch');
-                return res.status(401).json({ error: 'Invalid credentials' });
+                // Return debug info in error
+                return res.status(401).json({
+                    error: `Invalid password. Found User: ${user.email}. Hash match fail.`
+                });
             }
         } else {
-            console.log('❌ User not found in DB');
-        }
-
-        if (!user) {
-            return res.status(401).json({ error: 'Invalid credentials' });
+            return res.status(401).json({
+                error: `User not found. Searched for: '${identifier}'`
+            });
         }
 
         // Check password
