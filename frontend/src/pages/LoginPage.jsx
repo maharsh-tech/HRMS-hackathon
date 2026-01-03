@@ -30,7 +30,7 @@ export default function LoginPage() {
         setLoading(true);
 
         try {
-            const response = await loginApi(formData.employeeId, formData.password);
+            const response = await loginApi(formData.employeeId.trim(), formData.password);
 
             // Store auth data
             login(response.token, response.user);

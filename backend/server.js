@@ -95,11 +95,13 @@ app.post('/api/auth/login', async (req, res) => {
             return res.status(400).json({ error: 'Email/Employee ID and password are required' });
         }
 
+        const identifier = employeeId.trim();
+
         // Find user by employeeId OR email
         const user = await User.findOne({
             $or: [
-                { employeeId: employeeId },
-                { email: employeeId.toLowerCase() } // Treat input as email if it matches
+                { employeeId: identifier },
+                { email: identifier.toLowerCase() }
             ]
         });
 
