@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { getEmployees } from '../services/api';
+import { getEmployees, updateEmployee } from '../services/api';
 
 export default function DashboardPage() {
     const { user, isAdmin, logout, token } = useAuth();
@@ -9,6 +9,8 @@ export default function DashboardPage() {
     const [employees, setEmployees] = useState([]);
     const [loading, setLoading] = useState(false);
     const [activeNav, setActiveNav] = useState('dashboard');
+    const [editingEmployee, setEditingEmployee] = useState(null);
+    const [salaryForm, setSalaryForm] = useState({});
 
     useEffect(() => {
         if (isAdmin && token) {
@@ -16,28 +18,13 @@ export default function DashboardPage() {
         }
     }, [isAdmin, token]);
 
-    // Mock employees for demo
-    const mockEmployees = [
-        { _id: '1', employeeId: 'OIJODO20260001', firstName: 'John', lastName: 'Doe', email: 'john.doe@company.com', role: 'employee', mustChangePassword: false },
-        { _id: '2', employeeId: 'OIJASM20260002', firstName: 'Jane', lastName: 'Smith', email: 'jane.smith@company.com', role: 'employee', mustChangePassword: true },
-        { _id: '3', employeeId: 'OIMIBR20260003', firstName: 'Mike', lastName: 'Brown', email: 'mike.brown@company.com', role: 'employee', mustChangePassword: false },
-    ];
-
     const fetchEmployees = async () => {
         setLoading(true);
         try {
             const data = await getEmployees(token);
-            const apiEmployees = data.employees || [];
-            // Add mock employees for demo if only admin exists
-            if (apiEmployees.length <= 1) {
-                setEmployees([...apiEmployees, ...mockEmployees]);
-            } else {
-                setEmployees(apiEmployees);
-            }
+            setEmployees(data.employees || []);
         } catch (error) {
             console.error('Failed to fetch employees:', error);
-            // Use mock employees on error
-            setEmployees(mockEmployees);
         } finally {
             setLoading(false);
         }
@@ -48,11 +35,26 @@ export default function DashboardPage() {
         navigate('/login', { replace: true });
     };
 
+    const handleEditSalary = (employee) => {
+        setEditingEmployee(employee);
+        setSalaryForm(employee.salaryDetails || {});
+    };
+
+    const handleSalaryUpdate = async (e) => {
+        e.preventDefault();
+        try {
+            await updateEmployee(token, editingEmployee._id, { salaryDetails: salaryForm });
+            setEditingEmployee(null);
+            fetchEmployees(); // Refresh data
+            alert('Salary updated successfully!');
+        } catch (error) {
+            alert('Failed to update salary: ' + error.message);
+        }
+    };
+
     const getInitials = () => {
         if (!user) return 'U';
-        const first = user.firstName?.[0] || '';
-        const last = user.lastName?.[0] || '';
-        return (first + last).toUpperCase() || 'U';
+        return ((user.firstName?.[0] || '') + (user.lastName?.[0] || '')).toUpperCase() || 'U';
     };
 
     const stats = {
@@ -67,88 +69,51 @@ export default function DashboardPage() {
             <aside style={styles.sidebar}>
                 <div style={styles.logo}>
                     <div style={styles.logoIcon}>
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-                        </svg>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /></svg>
                     </div>
                     <span style={styles.logoText}>Dayflow HRMS</span>
                 </div>
 
                 <nav style={styles.nav}>
-                    <div 
-                        style={{...styles.navItem, ...(activeNav === 'dashboard' ? styles.navItemActive : {})}}
-                        onClick={() => setActiveNav('dashboard')}
-                    >
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <rect x="3" y="3" width="7" height="7" />
-                            <rect x="14" y="3" width="7" height="7" />
-                            <rect x="14" y="14" width="7" height="7" />
-                            <rect x="3" y="14" width="7" height="7" />
-                        </svg>
+                    <div style={{...styles.navItem, ...(activeNav === 'dashboard' ? styles.navItemActive : {})}} onClick={() => setActiveNav('dashboard')}>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /></svg>
                         <span>Dashboard</span>
                     </div>
 
-                    {isAdmin && (
-                        <Link 
-                            to="/admin/create-employee" 
-                            style={{...styles.navItem, textDecoration: 'none'}}
-                        >
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                                <circle cx="8.5" cy="7" r="4" />
-                                <line x1="20" y1="8" x2="20" y2="14" />
-                                <line x1="23" y1="11" x2="17" y2="11" />
-                            </svg>
-                            <span>Add Employee</span>
-                        </Link>
-                    )}
+                    <div style={{...styles.navItem, ...(activeNav === 'salaries' ? styles.navItemActive : {})}} onClick={() => setActiveNav('salaries')}>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></svg>
+                        <span>Salaries</span>
+                    </div>
+
+                    <Link to="/admin/create-employee" style={{...styles.navItem, textDecoration: 'none'}}>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="8.5" cy="7" r="4" /><line x1="20" y1="8" x2="20" y2="14" /><line x1="23" y1="11" x2="17" y2="11" /></svg>
+                        <span>Add Employee</span>
+                    </Link>
 
                     <Link to="/employees" style={{...styles.navItem, textDecoration: 'none'}}>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                            <circle cx="9" cy="7" r="4" />
-                            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-                            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                        </svg>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
                         <span>Employees</span>
                     </Link>
 
                     <Link to="/attendance" style={{...styles.navItem, textDecoration: 'none'}}>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                            <line x1="16" y1="2" x2="16" y2="6" />
-                            <line x1="8" y1="2" x2="8" y2="6" />
-                            <line x1="3" y1="10" x2="21" y2="10" />
-                        </svg>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /></svg>
                         <span>Attendance</span>
                     </Link>
 
                     <Link to="/leave" style={{...styles.navItem, textDecoration: 'none'}}>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                            <polyline points="14 2 14 8 20 8" />
-                            <line x1="16" y1="13" x2="8" y2="13" />
-                            <line x1="16" y1="17" x2="8" y2="17" />
-                        </svg>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /></svg>
                         <span>Leave Management</span>
                     </Link>
 
                     <Link to="/change-password" style={{...styles.navItem, textDecoration: 'none'}}>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                        </svg>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
                         <span>Change Password</span>
                     </Link>
                 </nav>
 
                 <div style={styles.sidebarFooter}>
                     <div style={styles.navItem} onClick={handleLogout}>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                            <polyline points="16 17 21 12 16 7" />
-                            <line x1="21" y1="12" x2="9" y2="12" />
-                        </svg>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" /></svg>
                         <span>Logout</span>
                     </div>
                 </div>
@@ -156,149 +121,81 @@ export default function DashboardPage() {
 
             {/* Main Content */}
             <main style={styles.main}>
-                {/* Header */}
                 <header style={styles.header}>
-                    <div>
-                        <h1 style={styles.headerTitle}>Dashboard</h1>
-                        <p style={styles.headerSubtitle}>Welcome back, {user?.firstName}!</p>
-                    </div>
-                    <div style={styles.userInfo}>
-                        <div style={styles.userAvatar}>{getInitials()}</div>
-                        <div>
-                            <p style={styles.userName}>{user?.firstName} {user?.lastName}</p>
-                            <p style={styles.userRole}>{user?.role}</p>
-                        </div>
-                    </div>
+                    <div><h1 style={styles.headerTitle}>Admin Dashboard</h1></div>
+                    <div style={styles.userInfo}><div style={styles.userAvatar}>{getInitials()}</div><div><p style={styles.userName}>{user?.firstName} {user?.lastName}</p><p style={styles.userRole}>{user?.role}</p></div></div>
                 </header>
 
-                {/* Stats Cards */}
-                <div style={styles.statsGrid}>
-                    <div style={{...styles.statCard, background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'}}>
-                        <div style={styles.statIcon}>
-                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                                <circle cx="9" cy="7" r="4" />
-                                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-                                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                            </svg>
-                        </div>
-                        <div>
-                            <p style={styles.statNumber}>{stats.totalEmployees}</p>
-                            <p style={styles.statLabel}>Total Employees</p>
-                        </div>
-                    </div>
-
-                    <div style={{...styles.statCard, background: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)'}}>
-                        <div style={styles.statIcon}>
-                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                            </svg>
-                        </div>
-                        <div>
-                            <p style={styles.statNumber}>{stats.admins}</p>
-                            <p style={styles.statLabel}>Admins</p>
-                        </div>
-                    </div>
-
-                    <div style={{...styles.statCard, background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)'}}>
-                        <div style={styles.statIcon}>
-                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                                <circle cx="12" cy="7" r="4" />
-                            </svg>
-                        </div>
-                        <div>
-                            <p style={styles.statNumber}>{stats.regularEmployees}</p>
-                            <p style={styles.statLabel}>Employees</p>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Employee Table */}
-                {isAdmin && (
-                    <div id="employees-table" style={styles.tableCard}>
-                        <div style={styles.tableHeader}>
-                            <h2 style={styles.tableTitle}>All Employees</h2>
-                            <button style={styles.refreshBtn} onClick={fetchEmployees} disabled={loading}>
-                                {loading ? 'Loading...' : '↻ Refresh'}
-                            </button>
+                {activeNav === 'dashboard' && (
+                    <>
+                        <div style={styles.statsGrid}>
+                            <div style={{...styles.statCard, background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'}}><div><p style={styles.statNumber}>{stats.totalEmployees}</p><p style={styles.statLabel}>Total Employees</p></div></div>
+                            <div style={{...styles.statCard, background: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)'}}><div><p style={styles.statNumber}>{stats.admins}</p><p style={styles.statLabel}>Admins</p></div></div>
+                            <div style={{...styles.statCard, background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)'}}><div><p style={styles.statNumber}>{stats.regularEmployees}</p><p style={styles.statLabel}>Employees</p></div></div>
                         </div>
 
-                        {loading ? (
-                            <div style={styles.loading}>Loading employees...</div>
-                        ) : employees.length === 0 ? (
-                            <div style={styles.empty}>No employees found. Create your first employee!</div>
-                        ) : (
+                        <div style={styles.tableCard}>
+                            <div style={styles.tableHeader}><h2 style={styles.tableTitle}>Recent Employees</h2><button style={styles.refreshBtn} onClick={fetchEmployees} disabled={loading}>{loading ? '...' : '↻ Refresh'}</button></div>
                             <div style={styles.tableWrapper}>
                                 <table style={styles.table}>
-                                    <thead>
-                                        <tr>
-                                            <th style={styles.th}>Employee ID</th>
-                                            <th style={styles.th}>Name</th>
-                                            <th style={styles.th}>Email</th>
-                                            <th style={styles.th}>Role</th>
-                                            <th style={styles.th}>Status</th>
-                                        </tr>
-                                    </thead>
+                                    <thead><tr><th style={styles.th}>ID</th><th style={styles.th}>Name</th><th style={styles.th}>Role</th></tr></thead>
                                     <tbody>
-                                        {employees.map((emp) => (
+                                        {employees.slice(0, 5).map(emp => (
                                             <tr key={emp._id} style={styles.tr}>
-                                                <td style={styles.td}>
-                                                    <code style={styles.code}>{emp.employeeId}</code>
-                                                </td>
-                                                <td style={styles.td}>
-                                                    <div style={styles.nameCell}>
-                                                        <div style={styles.avatar}>
-                                                            {emp.firstName?.[0]}{emp.lastName?.[0]}
-                                                        </div>
-                                                        {emp.firstName} {emp.lastName}
-                                                    </div>
-                                                </td>
-                                                <td style={styles.td}>{emp.email}</td>
-                                                <td style={styles.td}>
-                                                    <span style={{
-                                                        ...styles.badge,
-                                                        background: emp.role === 'admin' ? '#667eea20' : '#11998e20',
-                                                        color: emp.role === 'admin' ? '#667eea' : '#11998e'
-                                                    }}>
-                                                        {emp.role}
-                                                    </span>
-                                                </td>
-                                                <td style={styles.td}>
-                                                    <span style={{
-                                                        ...styles.badge,
-                                                        background: emp.mustChangePassword ? '#f5576c20' : '#38ef7d20',
-                                                        color: emp.mustChangePassword ? '#f5576c' : '#38ef7d'
-                                                    }}>
-                                                        {emp.mustChangePassword ? 'Pending' : 'Active'}
-                                                    </span>
-                                                </td>
+                                                <td style={styles.td}><code style={styles.code}>{emp.employeeId}</code></td>
+                                                <td style={styles.td}>{emp.firstName} {emp.lastName}</td>
+                                                <td style={styles.td}><span style={{...styles.badge, background: emp.role === 'admin' ? '#667eea20' : '#11998e20', color: emp.role === 'admin' ? '#667eea' : '#11998e'}}>{emp.role}</span></td>
                                             </tr>
                                         ))}
                                     </tbody>
                                 </table>
                             </div>
-                        )}
+                        </div>
+                    </>
+                )}
+
+                {activeNav === 'salaries' && (
+                    <div style={styles.tableCard}>
+                        <h2 style={styles.tableTitle}>Employee Salaries</h2>
+                        <div style={styles.tableWrapper}>
+                            <table style={styles.table}>
+                                <thead><tr><th style={styles.th}>Name</th><th style={styles.th}>Basic</th><th style={styles.th}>HRA</th><th style={styles.th}>Net Salary</th><th style={styles.th}>Action</th></tr></thead>
+                                <tbody>
+                                    {employees.filter(e => e.role !== 'admin').map(emp => ( // Filter out admins if needed, or keep all
+                                        <tr key={emp._id} style={styles.tr}>
+                                            <td style={styles.td}>{emp.firstName} {emp.lastName}</td>
+                                            <td style={styles.td}>${emp.salaryDetails?.basicSalary || 0}</td>
+                                            <td style={styles.td}>${emp.salaryDetails?.hra || 0}</td>
+                                            <td style={{...styles.td, color: '#38ef7d', fontWeight: 600}}>${emp.salaryDetails?.netSalary || 0}</td>
+                                            <td style={styles.td}>
+                                                <button style={styles.actionBtn} onClick={() => handleEditSalary(emp)}>Edit</button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 )}
 
-                {/* Employee View */}
-                {!isAdmin && (
-                    <div style={styles.tableCard}>
-                        <h2 style={styles.tableTitle}>Your Information</h2>
-                        <div style={styles.infoGrid}>
-                            <div style={styles.infoItem}>
-                                <span style={styles.infoLabel}>Employee ID</span>
-                                <span style={styles.infoValue}>{user?.employeeId}</span>
-                            </div>
-                            <div style={styles.infoItem}>
-                                <span style={styles.infoLabel}>Email</span>
-                                <span style={styles.infoValue}>{user?.email}</span>
-                            </div>
-                            <div style={styles.infoItem}>
-                                <span style={styles.infoLabel}>Role</span>
-                                <span style={styles.infoValue}>{user?.role}</span>
-                            </div>
+                {/* Edit Salary Modal */}
+                {editingEmployee && (
+                    <div style={styles.modalOverlay}>
+                        <div style={styles.modal}>
+                            <h3 style={styles.modalTitle}>Edit Salary for {editingEmployee.firstName}</h3>
+                            <form onSubmit={handleSalaryUpdate}>
+                                <div style={styles.formGrid}>
+                                    <div style={styles.formGroup}><label style={styles.formLabel}>Basic Salary</label><input type="number" style={styles.input} value={salaryForm.basicSalary || ''} onChange={e => setSalaryForm({...salaryForm, basicSalary: Number(e.target.value)})} /></div>
+                                    <div style={styles.formGroup}><label style={styles.formLabel}>HRA</label><input type="number" style={styles.input} value={salaryForm.hra || ''} onChange={e => setSalaryForm({...salaryForm, hra: Number(e.target.value)})} /></div>
+                                    <div style={styles.formGroup}><label style={styles.formLabel}>Allowances</label><input type="number" style={styles.input} value={salaryForm.allowances || ''} onChange={e => setSalaryForm({...salaryForm, allowances: Number(e.target.value)})} /></div>
+                                    <div style={styles.formGroup}><label style={styles.formLabel}>Deductions</label><input type="number" style={styles.input} value={salaryForm.deductions || ''} onChange={e => setSalaryForm({...salaryForm, deductions: Number(e.target.value)})} /></div>
+                                    <div style={styles.formGroup}><label style={styles.formLabel}>Net Salary</label><input type="number" style={styles.input} value={salaryForm.netSalary || ''} onChange={e => setSalaryForm({...salaryForm, netSalary: Number(e.target.value)})} /></div>
+                                </div>
+                                <div style={styles.buttonGroup}>
+                                    <button type="button" style={{...styles.btn, ...styles.btnSecondary}} onClick={() => setEditingEmployee(null)}>Cancel</button>
+                                    <button type="submit" style={{...styles.btn, ...styles.btnPrimary}}>Save Salary</button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 )}
@@ -308,249 +205,50 @@ export default function DashboardPage() {
 }
 
 const styles = {
-    container: {
-        display: 'flex',
-        minHeight: '100vh',
-        background: '#0f0f23',
-        color: '#fff',
-    },
-    sidebar: {
-        width: 260,
-        background: 'linear-gradient(180deg, #1a1a2e 0%, #16213e 100%)',
-        padding: '1.5rem',
-        display: 'flex',
-        flexDirection: 'column',
-        borderRight: '1px solid #ffffff10',
-    },
-    logo: {
-        display: 'flex',
-        alignItems: 'center',
-        gap: '0.75rem',
-        marginBottom: '2rem',
-    },
-    logoIcon: {
-        width: 40,
-        height: 40,
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        borderRadius: 10,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    logoText: {
-        fontSize: '1.25rem',
-        fontWeight: 700,
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        WebkitBackgroundClip: 'text',
-        WebkitTextFillColor: 'transparent',
-    },
-    nav: {
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '0.5rem',
-    },
-    navItem: {
-        display: 'flex',
-        alignItems: 'center',
-        gap: '0.75rem',
-        padding: '0.875rem 1rem',
-        borderRadius: 10,
-        cursor: 'pointer',
-        color: '#a0a0b0',
-        transition: 'all 0.2s ease',
-        fontSize: '0.9rem',
-    },
-    navItemActive: {
-        background: 'linear-gradient(135deg, #667eea20 0%, #764ba220 100%)',
-        color: '#667eea',
-        borderLeft: '3px solid #667eea',
-    },
-    sidebarFooter: {
-        marginTop: 'auto',
-        borderTop: '1px solid #ffffff10',
-        paddingTop: '1rem',
-    },
-    main: {
-        flex: 1,
-        padding: '2rem',
-        overflowY: 'auto',
-    },
-    header: {
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: '2rem',
-    },
-    headerTitle: {
-        fontSize: '2rem',
-        fontWeight: 700,
-        margin: 0,
-    },
-    headerSubtitle: {
-        color: '#a0a0b0',
-        margin: '0.25rem 0 0',
-    },
-    userInfo: {
-        display: 'flex',
-        alignItems: 'center',
-        gap: '1rem',
-        background: '#1a1a2e',
-        padding: '0.75rem 1.25rem',
-        borderRadius: 50,
-    },
-    userAvatar: {
-        width: 40,
-        height: 40,
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        borderRadius: '50%',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        fontWeight: 600,
-    },
-    userName: {
-        margin: 0,
-        fontWeight: 600,
-        fontSize: '0.9rem',
-    },
-    userRole: {
-        margin: 0,
-        fontSize: '0.75rem',
-        color: '#a0a0b0',
-        textTransform: 'capitalize',
-    },
-    statsGrid: {
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-        gap: '1.5rem',
-        marginBottom: '2rem',
-    },
-    statCard: {
-        padding: '1.5rem',
-        borderRadius: 16,
-        display: 'flex',
-        alignItems: 'center',
-        gap: '1rem',
-    },
-    statIcon: {
-        width: 60,
-        height: 60,
-        background: 'rgba(255,255,255,0.2)',
-        borderRadius: 12,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    statNumber: {
-        fontSize: '2rem',
-        fontWeight: 700,
-        margin: 0,
-    },
-    statLabel: {
-        margin: 0,
-        opacity: 0.8,
-    },
-    tableCard: {
-        background: '#1a1a2e',
-        borderRadius: 16,
-        padding: '1.5rem',
-        border: '1px solid #ffffff10',
-    },
-    tableHeader: {
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: '1rem',
-    },
-    tableTitle: {
-        margin: 0,
-        fontSize: '1.25rem',
-    },
-    refreshBtn: {
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        border: 'none',
-        color: '#fff',
-        padding: '0.5rem 1rem',
-        borderRadius: 8,
-        cursor: 'pointer',
-        fontSize: '0.875rem',
-    },
-    tableWrapper: {
-        overflowX: 'auto',
-    },
-    table: {
-        width: '100%',
-        borderCollapse: 'collapse',
-    },
-    th: {
-        textAlign: 'left',
-        padding: '1rem',
-        color: '#a0a0b0',
-        fontWeight: 500,
-        fontSize: '0.875rem',
-        borderBottom: '1px solid #ffffff10',
-    },
-    tr: {
-        borderBottom: '1px solid #ffffff08',
-    },
-    td: {
-        padding: '1rem',
-        fontSize: '0.9rem',
-    },
-    code: {
-        background: '#667eea20',
-        color: '#667eea',
-        padding: '0.25rem 0.5rem',
-        borderRadius: 4,
-        fontSize: '0.8rem',
-    },
-    nameCell: {
-        display: 'flex',
-        alignItems: 'center',
-        gap: '0.75rem',
-    },
-    avatar: {
-        width: 32,
-        height: 32,
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        borderRadius: '50%',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        fontSize: '0.75rem',
-        fontWeight: 600,
-    },
-    badge: {
-        padding: '0.25rem 0.75rem',
-        borderRadius: 50,
-        fontSize: '0.75rem',
-        fontWeight: 500,
-        textTransform: 'capitalize',
-    },
-    loading: {
-        textAlign: 'center',
-        padding: '2rem',
-        color: '#a0a0b0',
-    },
-    empty: {
-        textAlign: 'center',
-        padding: '2rem',
-        color: '#a0a0b0',
-    },
-    infoGrid: {
-        display: 'grid',
-        gap: '1rem',
-    },
-    infoItem: {
-        display: 'flex',
-        justifyContent: 'space-between',
-        padding: '1rem 0',
-        borderBottom: '1px solid #ffffff10',
-    },
-    infoLabel: {
-        color: '#a0a0b0',
-    },
-    infoValue: {
-        fontWeight: 500,
-    },
+    // Reusing existing styles + adding modal styles
+    container: { display: 'flex', minHeight: '100vh', background: '#0f0f23', color: '#fff' },
+    sidebar: { width: 260, background: 'linear-gradient(180deg, #1a1a2e 0%, #16213e 100%)', padding: '1.5rem', display: 'flex', flexDirection: 'column', borderRight: '1px solid #ffffff10' },
+    logo: { display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '2rem' },
+    logoIcon: { width: 40, height: 40, background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' },
+    logoText: { fontSize: '1.25rem', fontWeight: 700, background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' },
+    nav: { display: 'flex', flexDirection: 'column', gap: '0.5rem' },
+    navItem: { display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.875rem 1rem', borderRadius: 10, cursor: 'pointer', color: '#a0a0b0', transition: 'all 0.2s ease', fontSize: '0.9rem' },
+    navItemActive: { background: 'linear-gradient(135deg, #667eea20 0%, #764ba220 100%)', color: '#667eea', borderLeft: '3px solid #667eea' },
+    sidebarFooter: { marginTop: 'auto', borderTop: '1px solid #ffffff10', paddingTop: '1rem' },
+    main: { flex: 1, padding: '2rem', overflowY: 'auto' },
+    header: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' },
+    headerTitle: { fontSize: '2rem', fontWeight: 700, margin: 0 },
+    headerSubtitle: { color: '#a0a0b0', margin: '0.25rem 0 0' },
+    userInfo: { display: 'flex', alignItems: 'center', gap: '1rem', background: '#1a1a2e', padding: '0.75rem 1.25rem', borderRadius: 50 },
+    userAvatar: { width: 40, height: 40, background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 600 },
+    userName: { margin: 0, fontWeight: 600, fontSize: '0.9rem' },
+    userRole: { margin: 0, fontSize: '0.75rem', color: '#a0a0b0', textTransform: 'capitalize' },
+    statsGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem', marginBottom: '2rem' },
+    statCard: { padding: '1.5rem', borderRadius: 16, display: 'flex', alignItems: 'center', gap: '1rem' },
+    statNumber: { fontSize: '2rem', fontWeight: 700, margin: 0 },
+    statLabel: { margin: 0, opacity: 0.8 },
+    tableCard: { background: '#1a1a2e', borderRadius: 16, padding: '1.5rem', border: '1px solid #ffffff10' },
+    tableHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' },
+    tableTitle: { margin: 0, fontSize: '1.25rem' },
+    refreshBtn: { background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', border: 'none', color: '#fff', padding: '0.5rem 1rem', borderRadius: 8, cursor: 'pointer', fontSize: '0.875rem' },
+    tableWrapper: { overflowX: 'auto' },
+    table: { width: '100%', borderCollapse: 'collapse' },
+    th: { textAlign: 'left', padding: '1rem', color: '#a0a0b0', fontWeight: 500, fontSize: '0.875rem', borderBottom: '1px solid #ffffff10' },
+    tr: { borderBottom: '1px solid #ffffff08' },
+    td: { padding: '1rem', fontSize: '0.9rem' },
+    badge: { padding: '0.25rem 0.75rem', borderRadius: 50, fontSize: '0.75rem', fontWeight: 500, textTransform: 'capitalize' },
+    code: { background: '#667eea20', color: '#667eea', padding: '0.25rem 0.5rem', borderRadius: 4, fontSize: '0.8rem' },
+    // Modal Styles
+    modalOverlay: { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 },
+    modal: { background: '#1a1a2e', padding: '2rem', borderRadius: 16, width: '90%', maxWidth: '600px', border: '1px solid #ffffff20' },
+    modalTitle: { margin: '0 0 1.5rem', fontSize: '1.5rem' },
+    formGrid: { display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' },
+    formGroup: { marginBottom: '1rem' },
+    formLabel: { display: 'block', marginBottom: '0.5rem', color: '#a0a0b0', fontSize: '0.9rem' },
+    input: { width: '100%', background: '#0f0f23', border: '1px solid #ffffff20', borderRadius: 8, padding: '0.75rem', color: '#fff', fontSize: '0.9rem' },
+    buttonGroup: { display: 'flex', gap: '1rem', marginTop: '2rem', justifyContent: 'flex-end' },
+    btn: { padding: '0.75rem 1.5rem', borderRadius: 10, border: 'none', cursor: 'pointer', fontSize: '0.9rem', fontWeight: 500 },
+    btnPrimary: { background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: '#fff' },
+    btnSecondary: { background: '#ffffff20', color: '#fff' },
+    actionBtn: { background: '#ffffff10', border: 'none', color: '#667eea', padding: '0.25rem 0.75rem', borderRadius: 4, cursor: 'pointer' },
 };

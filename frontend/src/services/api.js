@@ -195,3 +195,56 @@ export async function getTodayAttendance(token) {
     if (!res.ok) throw new Error(data.error || 'Failed to fetch today attendance');
     return data;
 }
+
+// ==================== PROFILE APIs ====================
+
+export async function getProfile(token) {
+    const res = await fetch(`${API_BASE}/api/profile`, {
+        headers: { 'Authorization': `Bearer ${token}` },
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to fetch profile');
+    return data;
+}
+
+export async function updateProfile(token, profileData) {
+    const res = await fetch(`${API_BASE}/api/profile`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(profileData),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to update profile');
+    return data;
+}
+
+export async function uploadImageToImgBB(imageFile) {
+    const formData = new FormData();
+    formData.append('image', imageFile);
+
+    const res = await fetch('https://api.imgbb.com/1/upload?key=9f36f6eb657e0040be10186ed9c73b74', {
+        method: 'POST',
+        body: formData
+    });
+
+    const data = await res.json();
+    if (!data.success) throw new Error('Image upload failed');
+    return data.data.url;
+}
+
+export async function updateEmployee(token, id, data) {
+    const res = await fetch(`${API_BASE}/api/admin/employees/${id}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || 'Failed to update employee');
+    return result;
+}

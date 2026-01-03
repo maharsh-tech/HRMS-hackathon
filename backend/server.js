@@ -384,6 +384,75 @@ app.get('/api/attendance/all', authMiddleware, adminOnly, async (req, res) => {
     }
 });
 
+// ==================== PROFILE ====================
+
+// Get My Profile
+app.get('/api/profile', authMiddleware, async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id).select('-password');
+        res.json({ profile: user });
+    } catch (error) {
+        console.error('Get profile error:', error.message);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Update My Profile - For Employees (Can only update personal details)
+app.put('/api/profile', authMiddleware, async (req, res) => {
+    try {
+        const allowedFields = [
+            'phone', 'address', 'city', 'dateOfBirth', 'gender', 'photo', 'emergencyContact'
+        ];
+
+        const updates = {};
+        allowedFields.forEach(field => {
+            if (req.body[field] !== undefined) {
+                updates[field] = req.body[field];
+            }
+        });
+
+        // Ensure jobDetails and salaryDetails are NOT updated here for security
+        // Use a separate Admin endpoint for those
+
+        const user = await User.findByIdAndUpdate(
+            req.user._id,
+            updates,
+            { new: true }
+        ).select('-password');
+
+        res.json({ message: 'Profile updated successfully', profile: user });
+    } catch (error) {
+        console.error('Update profile error:', error.message);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Admin: Update ANY User Profile (Details, Job, Salary)
+app.put('/api/admin/employees/:id', authMiddleware, adminOnly, async (req, res) => {
+    try {
+        const updates = req.body;
+
+        // Prevent updating password directly here (use change password API)
+        delete updates.password;
+        delete updates.employeeId; // Should not change ID usually
+
+        const user = await User.findByIdAndUpdate(
+            req.params.id,
+            updates,
+            { new: true }
+        ).select('-password');
+
+        if (!user) {
+            return res.status(404).json({ error: 'Employee not found' });
+        }
+
+        res.json({ message: 'Employee updated successfully', profile: user });
+    } catch (error) {
+        console.error('Admin update employee error:', error.message);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
 app.listen(PORT, () => {
     console.log(`Backend running at http://localhost:${PORT}`);
 });

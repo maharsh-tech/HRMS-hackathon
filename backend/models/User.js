@@ -49,6 +49,60 @@ const userSchema = new mongoose.Schema({
     createdAt: {
         type: Date,
         default: Date.now
+    },
+    // Profile fields
+    photo: {
+        type: String,  // URL from ImgBB
+        default: ''
+    },
+    phone: {
+        type: String,
+        default: ''
+    },
+    address: {
+        type: String,
+        default: ''
+    },
+    city: {
+        type: String,
+        default: ''
+    },
+    dateOfBirth: {
+        type: Date
+    },
+    gender: {
+        type: String,
+        enum: ['Male', 'Female', 'Other', ''],
+        default: ''
+    },
+    emergencyContact: {
+        name: { type: String, default: '' },
+        phone: { type: String, default: '' },
+        relation: { type: String, default: '' }
+    },
+    // Job Details
+    jobDetails: {
+        designation: { type: String, default: '' },
+        department: { type: String, default: '' },
+        employmentType: { type: String, default: 'Full-time' }, // Full-time, Part-time, Contract
+        workLocation: { type: String, default: 'Office' }, // Office, Remote, Hybrid
+        joiningDate: { type: Date, default: Date.now },
+        manager: { type: String, default: '' } // Name or ID
+    },
+    // Salary Details (Confidential - typically Admin only write)
+    salaryDetails: {
+        basicSalary: { type: Number, default: 0 },
+        hra: { type: Number, default: 0 },
+        allowances: { type: Number, default: 0 },
+        deductions: { type: Number, default: 0 },
+        netSalary: { type: Number, default: 0 },
+        minSalary: { type: Number, default: 0 },
+        maxSalary: { type: Number, default: 0 },
+        bankAccount: {
+            accountNumber: { type: String, default: '' },
+            bankName: { type: String, default: '' },
+            ifscCode: { type: String, default: '' }
+        }
     }
 });
 
