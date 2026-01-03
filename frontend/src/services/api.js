@@ -23,10 +23,17 @@ export async function login(employeeId, password) {
         body: JSON.stringify({ employeeId, password }),
     });
 
-    const data = await res.json();
+    let data;
+    try {
+        const text = await res.text();
+        data = JSON.parse(text);
+    } catch (e) {
+        console.error('Login Non-JSON response:', e);
+        throw new Error('Server error: Invalid response format');
+    }
 
     if (!res.ok) {
-        throw new Error(data.message || 'Login failed');
+        throw new Error(data.error || 'Login failed');
     }
 
     return data;
