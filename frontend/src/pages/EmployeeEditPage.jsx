@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { getEmployees, updateEmployee } from '../services/api';
+import { getEmployees, updateEmployee, addEmployeeDocument, deleteEmployeeDocument, uploadImageToImgBB } from '../services/api';
 import SalaryCalculator from '../components/SalaryCalculator';
 
 export default function EmployeeEditPage() {
@@ -19,6 +19,11 @@ export default function EmployeeEditPage() {
     const [personalInfo, setPersonalInfo] = useState({});
     const [jobDetails, setJobDetails] = useState({});
     const [salaryDetails, setSalaryDetails] = useState({});
+
+    // Documents state
+    const [documents, setDocuments] = useState([]);
+    const [docForm, setDocForm] = useState({ name: '', type: 'Other' });
+    const [uploadingDoc, setUploadingDoc] = useState(false);
 
     useEffect(() => {
         if (token && id) {
@@ -51,6 +56,7 @@ export default function EmployeeEditPage() {
                     manager: emp.jobDetails?.manager || '',
                 });
                 setSalaryDetails(emp.salaryDetails || {});
+                setDocuments(emp.documents || []);
             }
         } catch (error) {
             console.error('Failed to fetch employee:', error);
@@ -94,6 +100,48 @@ export default function EmployeeEditPage() {
         }));
     };
 
+    const handleDocUpload = async (e) => {
+        const file = e.target.files[0];
+        if (!file || !docForm.name.trim()) {
+            setMessage({ type: 'error', text: 'Please enter document name and select a file' });
+            return;
+        }
+
+        setUploadingDoc(true);
+        try {
+            // Upload file to ImgBB
+            const url = await uploadImageToImgBB(file);
+
+            // Add document to employee
+            const result = await addEmployeeDocument(token, id, {
+                name: docForm.name,
+                type: docForm.type,
+                url
+            });
+
+            setDocuments(prev => [...prev, result.document]);
+            setDocForm({ name: '', type: 'Other' });
+            setMessage({ type: 'success', text: 'Document uploaded successfully!' });
+            e.target.value = '';
+        } catch (error) {
+            setMessage({ type: 'error', text: error.message || 'Failed to upload document' });
+        } finally {
+            setUploadingDoc(false);
+        }
+    };
+
+    const handleDeleteDoc = async (docId) => {
+        if (!confirm('Are you sure you want to delete this document?')) return;
+
+        try {
+            await deleteEmployeeDocument(token, id, docId);
+            setDocuments(prev => prev.filter(d => d._id !== docId));
+            setMessage({ type: 'success', text: 'Document deleted successfully!' });
+        } catch (error) {
+            setMessage({ type: 'error', text: error.message || 'Failed to delete document' });
+        }
+    };
+
     if (!isAdmin) {
         return (
             <div style={styles.accessDenied}>
@@ -108,6 +156,7 @@ export default function EmployeeEditPage() {
         { id: 'personal', label: '👤 Personal Info', icon: '👤' },
         { id: 'job', label: '💼 Job Details', icon: '💼' },
         { id: 'salary', label: '💰 Salary Information', icon: '💰' },
+        { id: 'documents', label: '📄 Documents', icon: '📄' },
     ];
 
     return (
@@ -349,6 +398,138 @@ export default function EmployeeEditPage() {
                                     salaryDetails={salaryDetails}
                                     onChange={handleSalaryChange}
                                 />
+                            )}
+
+                            {activeTab === 'documents' && (
+                                <div>
+                                    <h3 style={{ margin: '0 0 1.5rem', fontSize: '1.1rem', color: '#667eea' }}>Upload New Document</h3>
+                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 150px auto', gap: '1rem', alignItems: 'end', marginBottom: '2rem' }}>
+                                        <div style={styles.inputGroup}>
+                                            <label style={styles.label}>Document Name *</label>
+                                            <input
+                                                type="text"
+                                                placeholder="e.g., Employment Contract"
+                                                value={docForm.name}
+                                                onChange={(e) => setDocForm({ ...docForm, name: e.target.value })}
+                                                style={styles.input}
+                                            />
+                                        </div>
+                                        <div style={styles.inputGroup}>
+                                            <label style={styles.label}>Type</label>
+                                            <select
+                                                value={docForm.type}
+                                                onChange={(e) => setDocForm({ ...docForm, type: e.target.value })}
+                                                style={styles.input}
+                                            >
+                                                <option value="Contract">Contract</option>
+                                                <option value="Certificate">Certificate</option>
+                                                <option value="ID">ID Proof</option>
+                                                <option value="Resume">Resume</option>
+                                                <option value="Other">Other</option>
+                                            </select>
+                                        </div>
+                                        <div style={styles.inputGroup}>
+                                            <label style={{ ...styles.label, visibility: 'hidden' }}>Upload</label>
+                                            <label style={{
+                                                display: 'inline-flex',
+                                                alignItems: 'center',
+                                                gap: '0.5rem',
+                                                padding: '0.75rem 1.25rem',
+                                                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                                                color: '#fff',
+                                                borderRadius: 8,
+                                                cursor: uploadingDoc ? 'wait' : 'pointer',
+                                                fontSize: '0.9rem',
+                                                fontWeight: 500,
+                                                opacity: uploadingDoc ? 0.7 : 1
+                                            }}>
+                                                {uploadingDoc ? '⏳ Uploading...' : '📎 Upload File'}
+                                                <input
+                                                    type="file"
+                                                    accept="image/*,.pdf"
+                                                    style={{ display: 'none' }}
+                                                    onChange={handleDocUpload}
+                                                    disabled={uploadingDoc || !docForm.name.trim()}
+                                                />
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <h3 style={{ margin: '0 0 1rem', fontSize: '1.1rem', color: '#667eea' }}>Uploaded Documents ({documents.length})</h3>
+                                    {documents.length === 0 ? (
+                                        <p style={{ color: '#a0a0b0', fontSize: '0.9rem' }}>No documents uploaded yet.</p>
+                                    ) : (
+                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1rem' }}>
+                                            {documents.map(doc => (
+                                                <div key={doc._id} style={{
+                                                    background: '#0f0f23',
+                                                    border: '1px solid #ffffff15',
+                                                    borderRadius: 12,
+                                                    padding: '1rem',
+                                                    display: 'flex',
+                                                    flexDirection: 'column',
+                                                    gap: '0.75rem'
+                                                }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                                        <div style={{
+                                                            width: 44, height: 44,
+                                                            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                                                            borderRadius: 10,
+                                                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                            flexShrink: 0
+                                                        }}>
+                                                            <span style={{ fontSize: '1.25rem' }}>📄</span>
+                                                        </div>
+                                                        <div style={{ flex: 1, overflow: 'hidden' }}>
+                                                            <div style={{ fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{doc.name}</div>
+                                                            <div style={{ fontSize: '0.75rem', color: '#a0a0b0' }}>
+                                                                {doc.type} • {new Date(doc.uploadedAt).toLocaleDateString()}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                                        <a
+                                                            href={doc.url}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            style={{
+                                                                flex: 1,
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                justifyContent: 'center',
+                                                                gap: '0.5rem',
+                                                                padding: '0.5rem',
+                                                                background: '#667eea20',
+                                                                color: '#667eea',
+                                                                borderRadius: 6,
+                                                                textDecoration: 'none',
+                                                                fontSize: '0.85rem',
+                                                                fontWeight: 500
+                                                            }}
+                                                        >
+                                                            👁 View
+                                                        </a>
+                                                        <button
+                                                            onClick={() => handleDeleteDoc(doc._id)}
+                                                            style={{
+                                                                padding: '0.5rem 1rem',
+                                                                background: '#f5576c20',
+                                                                color: '#f5576c',
+                                                                border: 'none',
+                                                                borderRadius: 6,
+                                                                cursor: 'pointer',
+                                                                fontSize: '0.85rem',
+                                                                fontWeight: 500
+                                                            }}
+                                                        >
+                                                            🗑 Delete
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
                             )}
                         </div>
                     </>

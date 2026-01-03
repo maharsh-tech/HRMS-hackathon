@@ -119,7 +119,15 @@ const userSchema = new mongoose.Schema({
             bankName: { type: String, default: '' },
             ifscCode: { type: String, default: '' }
         }
-    }
+    },
+    // Employee Documents (Admin managed, Employee view-only)
+    documents: [{
+        name: { type: String, required: true },
+        type: { type: String, default: 'Other' },  // Contract, Certificate, ID, Resume, Other
+        url: { type: String, required: true },
+        uploadedAt: { type: Date, default: Date.now },
+        uploadedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
+    }]
 });
 
 // Hash password before saving

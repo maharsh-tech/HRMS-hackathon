@@ -468,6 +468,91 @@ app.put('/api/admin/employees/:id', authMiddleware, adminOnly, async (req, res) 
     }
 });
 
+// ==================== EMPLOYEE DOCUMENTS ====================
+
+// Get Employee Documents (Employee sees own, Admin can see any)
+app.get('/api/documents/:employeeId', authMiddleware, async (req, res) => {
+    try {
+        const { employeeId } = req.params;
+        
+        // Find user by employeeId string (not MongoDB _id)
+        const targetUser = await User.findOne({ employeeId });
+        if (!targetUser) {
+            return res.status(404).json({ error: 'Employee not found' });
+        }
+
+        // Check access: admin can see any, employee can only see own
+        if (req.user.role !== 'admin' && req.user.employeeId !== employeeId) {
+            return res.status(403).json({ error: 'Access denied' });
+        }
+
+        res.json({ documents: targetUser.documents || [] });
+    } catch (error) {
+        console.error('Get documents error:', error.message);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Add Document to Employee (Admin only)
+app.post('/api/admin/documents/:id', authMiddleware, adminOnly, async (req, res) => {
+    try {
+        const { name, type, url } = req.body;
+
+        if (!name || !url) {
+            return res.status(400).json({ error: 'Document name and URL are required' });
+        }
+
+        const user = await User.findById(req.params.id);
+        if (!user) {
+            return res.status(404).json({ error: 'Employee not found' });
+        }
+
+        const newDoc = {
+            name,
+            type: type || 'Other',
+            url,
+            uploadedAt: new Date(),
+            uploadedBy: req.user._id
+        };
+
+        user.documents.push(newDoc);
+        await user.save();
+
+        res.status(201).json({ 
+            message: 'Document added successfully', 
+            document: user.documents[user.documents.length - 1]
+        });
+    } catch (error) {
+        console.error('Add document error:', error.message);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Delete Document from Employee (Admin only)
+app.delete('/api/admin/documents/:id/:docId', authMiddleware, adminOnly, async (req, res) => {
+    try {
+        const { id, docId } = req.params;
+
+        const user = await User.findById(id);
+        if (!user) {
+            return res.status(404).json({ error: 'Employee not found' });
+        }
+
+        const docIndex = user.documents.findIndex(d => d._id.toString() === docId);
+        if (docIndex === -1) {
+            return res.status(404).json({ error: 'Document not found' });
+        }
+
+        user.documents.splice(docIndex, 1);
+        await user.save();
+
+        res.json({ message: 'Document deleted successfully' });
+    } catch (error) {
+        console.error('Delete document error:', error.message);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
 // Export the app for Vercel Serverless Functions
 module.exports = app;
 

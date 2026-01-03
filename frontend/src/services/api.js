@@ -291,3 +291,38 @@ export async function updateEmployee(token, id, data) {
     if (!res.ok) throw new Error(result.error || 'Failed to update employee');
     return result;
 }
+
+// ==================== DOCUMENT APIs ====================
+
+export async function getEmployeeDocuments(token, employeeId) {
+    const res = await fetch(`${API_BASE}/api/documents/${employeeId}`, {
+        headers: { 'Authorization': `Bearer ${token}` },
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to fetch documents');
+    return data;
+}
+
+export async function addEmployeeDocument(token, id, documentData) {
+    const res = await fetch(`${API_BASE}/api/admin/documents/${id}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(documentData),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to add document');
+    return data;
+}
+
+export async function deleteEmployeeDocument(token, id, docId) {
+    const res = await fetch(`${API_BASE}/api/admin/documents/${id}/${docId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` },
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to delete document');
+    return data;
+}

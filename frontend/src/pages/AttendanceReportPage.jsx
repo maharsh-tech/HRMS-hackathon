@@ -9,6 +9,8 @@ export default function AttendanceReportPage() {
     const [employees, setEmployees] = useState([]);
     const [loading, setLoading] = useState(false);
     const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+    const [viewMode, setViewMode] = useState('daily');
+    const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().slice(0, 7));
 
     useEffect(() => {
         if (token && isAdmin) {
@@ -71,7 +73,7 @@ export default function AttendanceReportPage() {
                 </div>
 
                 <nav style={styles.nav}>
-                    <Link to="/dashboard" style={{...styles.navItem, textDecoration: 'none'}}>
+                    <Link to="/dashboard" style={{ ...styles.navItem, textDecoration: 'none' }}>
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <rect x="3" y="3" width="7" height="7" />
                             <rect x="14" y="3" width="7" height="7" />
@@ -82,7 +84,7 @@ export default function AttendanceReportPage() {
                     </Link>
 
                     {isAdmin && (
-                        <Link to="/admin/create-employee" style={{...styles.navItem, textDecoration: 'none'}}>
+                        <Link to="/admin/create-employee" style={{ ...styles.navItem, textDecoration: 'none' }}>
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                 <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
                                 <circle cx="8.5" cy="7" r="4" />
@@ -93,7 +95,7 @@ export default function AttendanceReportPage() {
                         </Link>
                     )}
 
-                    <Link to="/employees" style={{...styles.navItem, textDecoration: 'none'}}>
+                    <Link to="/employees" style={{ ...styles.navItem, textDecoration: 'none' }}>
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
                             <circle cx="9" cy="7" r="4" />
@@ -103,7 +105,7 @@ export default function AttendanceReportPage() {
                         <span>Employees</span>
                     </Link>
 
-                    <Link to="/attendance" style={{...styles.navItem, ...styles.navItemActive, textDecoration: 'none'}}>
+                    <Link to="/attendance" style={{ ...styles.navItem, ...styles.navItemActive, textDecoration: 'none' }}>
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
                             <line x1="16" y1="2" x2="16" y2="6" />
@@ -113,7 +115,7 @@ export default function AttendanceReportPage() {
                         <span>Attendance</span>
                     </Link>
 
-                    <Link to="/change-password" style={{...styles.navItem, textDecoration: 'none'}}>
+                    <Link to="/change-password" style={{ ...styles.navItem, textDecoration: 'none' }}>
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
                             <path d="M7 11V7a5 5 0 0 1 10 0v4" />
@@ -141,40 +143,76 @@ export default function AttendanceReportPage() {
                         <h1 style={styles.headerTitle}>Attendance Report</h1>
                         <p style={styles.headerSubtitle}>Track employee attendance and working hours</p>
                     </div>
-                    <div style={styles.dateContainer}>
-                        <input
-                            type="date"
-                            value={selectedDate}
-                            onChange={(e) => setSelectedDate(e.target.value)}
-                            style={styles.dateInput}
-                        />
+                    <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                            {['daily', 'weekly', 'monthly'].map(mode => (
+                                <button
+                                    key={mode}
+                                    onClick={() => setViewMode(mode)}
+                                    style={{
+                                        padding: '0.5rem 1rem',
+                                        borderRadius: 8,
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                        fontSize: '0.85rem',
+                                        fontWeight: 500,
+                                        background: viewMode === mode
+                                            ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+                                            : '#1a1a2e',
+                                        color: viewMode === mode ? '#fff' : '#a0a0b0'
+                                    }}
+                                >
+                                    {mode.charAt(0).toUpperCase() + mode.slice(1)}
+                                </button>
+                            ))}
+                        </div>
+                        {viewMode === 'daily' && (
+                            <input
+                                type="date"
+                                value={selectedDate}
+                                onChange={(e) => setSelectedDate(e.target.value)}
+                                style={styles.dateInput}
+                            />
+                        )}
+                        {viewMode === 'monthly' && (
+                            <input
+                                type="month"
+                                value={selectedMonth}
+                                onChange={(e) => setSelectedMonth(e.target.value)}
+                                style={styles.dateInput}
+                            />
+                        )}
                     </div>
                 </header>
 
                 {/* Stats Cards */}
                 <div style={styles.statsGrid}>
-                    <div style={{...styles.statCard, background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'}}>
+                    <div style={{ ...styles.statCard, background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
                         <div style={styles.statNumber}>{stats.total}</div>
                         <div style={styles.statLabel}>Total Employees</div>
                     </div>
-                    <div style={{...styles.statCard, background: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)'}}>
+                    <div style={{ ...styles.statCard, background: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)' }}>
                         <div style={styles.statNumber}>{stats.present}</div>
                         <div style={styles.statLabel}>Present Today</div>
                     </div>
-                    <div style={{...styles.statCard, background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)'}}>
+                    <div style={{ ...styles.statCard, background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' }}>
                         <div style={styles.statNumber}>{stats.absent}</div>
                         <div style={styles.statLabel}>Absent</div>
                     </div>
-                    <div style={{...styles.statCard, background: 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)'}}>
-                        <div style={{...styles.statNumber, color: '#333'}}>{stats.leave}</div>
-                        <div style={{...styles.statLabel, color: '#333'}}>On Leave</div>
+                    <div style={{ ...styles.statCard, background: 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)' }}>
+                        <div style={{ ...styles.statNumber, color: '#333' }}>{stats.leave}</div>
+                        <div style={{ ...styles.statLabel, color: '#333' }}>On Leave</div>
                     </div>
                 </div>
 
-                {/* Attendance Table */}
+                {/* Attendance Content Based on View Mode */}
                 <div style={styles.tableCard}>
                     <div style={styles.tableHeader}>
-                        <h2 style={styles.tableTitle}>Daily Attendance - {new Date(selectedDate).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</h2>
+                        <h2 style={styles.tableTitle}>
+                            {viewMode === 'daily' && `Daily Attendance - ${new Date(selectedDate).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}`}
+                            {viewMode === 'weekly' && 'Weekly Attendance Summary'}
+                            {viewMode === 'monthly' && `Monthly Attendance - ${new Date(selectedMonth + '-01').toLocaleDateString('en-US', { year: 'numeric', month: 'long' })}`}
+                        </h2>
                         <button style={styles.refreshBtn} onClick={fetchEmployees} disabled={loading}>
                             {loading ? 'Loading...' : '↻ Refresh'}
                         </button>
@@ -185,57 +223,172 @@ export default function AttendanceReportPage() {
                     ) : employees.length === 0 ? (
                         <div style={styles.empty}>No attendance records found.</div>
                     ) : (
-                        <div style={styles.tableWrapper}>
-                            <table style={styles.table}>
-                                <thead>
-                                    <tr>
-                                        <th style={styles.th}>Employee</th>
-                                        <th style={styles.th}>Employee ID</th>
-                                        <th style={styles.th}>Check In</th>
-                                        <th style={styles.th}>Check Out</th>
-                                        <th style={styles.th}>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {employees.map((emp) => {
-                                        const statusStyle = getStatusColor(emp.status);
+                        <>
+                            {viewMode === 'daily' && (
+                                <div style={styles.tableWrapper}>
+                                    <table style={styles.table}>
+                                        <thead>
+                                            <tr>
+                                                <th style={styles.th}>Employee</th>
+                                                <th style={styles.th}>Employee ID</th>
+                                                <th style={styles.th}>Check In</th>
+                                                <th style={styles.th}>Check Out</th>
+                                                <th style={styles.th}>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {employees.map((emp) => {
+                                                const statusStyle = getStatusColor(emp.status);
+                                                return (
+                                                    <tr key={emp._id} style={styles.tr}>
+                                                        <td style={styles.td}>
+                                                            <div style={styles.nameCell}>
+                                                                <div style={styles.avatar}>
+                                                                    {emp.firstName?.[0]}{emp.lastName?.[0]}
+                                                                </div>
+                                                                <div>
+                                                                    <div>{emp.firstName} {emp.lastName}</div>
+                                                                    <div style={styles.email}>{emp.email}</div>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                        <td style={styles.td}>
+                                                            <code style={styles.code}>{emp.employeeId}</code>
+                                                        </td>
+                                                        <td style={styles.td}>
+                                                            {emp.status === 'Absent' || emp.status === 'Leave' ? '-' : emp.checkIn}
+                                                        </td>
+                                                        <td style={styles.td}>
+                                                            {emp.status === 'Absent' || emp.status === 'Leave' ? '-' : emp.checkOut}
+                                                        </td>
+                                                        <td style={styles.td}>
+                                                            <span style={{
+                                                                ...styles.badge,
+                                                                background: statusStyle.bg,
+                                                                color: statusStyle.color
+                                                            }}>
+                                                                {emp.status}
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                );
+                                            })}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            )}
+
+                            {viewMode === 'weekly' && (
+                                <div style={{ display: 'grid', gap: '1rem' }}>
+                                    {employees.map(emp => {
+                                        // Mock weekly data for each employee
+                                        const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+                                        const weekData = weekDays.map(day => ({
+                                            day,
+                                            status: ['Present', 'Present', 'Present', 'Absent', 'Half-day'][Math.floor(Math.random() * 5)]
+                                        }));
+                                        const presentCount = weekData.filter(d => d.status === 'Present').length;
+
                                         return (
-                                            <tr key={emp._id} style={styles.tr}>
-                                                <td style={styles.td}>
-                                                    <div style={styles.nameCell}>
-                                                        <div style={styles.avatar}>
-                                                            {emp.firstName?.[0]}{emp.lastName?.[0]}
-                                                        </div>
+                                            <div key={emp._id} style={{ background: '#0f0f23', border: '1px solid #ffffff10', borderRadius: 12, padding: '1rem' }}>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                                        <div style={styles.avatar}>{emp.firstName?.[0]}{emp.lastName?.[0]}</div>
                                                         <div>
-                                                            <div>{emp.firstName} {emp.lastName}</div>
-                                                            <div style={styles.email}>{emp.email}</div>
+                                                            <div style={{ fontWeight: 500 }}>{emp.firstName} {emp.lastName}</div>
+                                                            <div style={{ fontSize: '0.8rem', color: '#a0a0b0' }}>{emp.employeeId}</div>
                                                         </div>
                                                     </div>
-                                                </td>
-                                                <td style={styles.td}>
-                                                    <code style={styles.code}>{emp.employeeId}</code>
-                                                </td>
-                                                <td style={styles.td}>
-                                                    {emp.status === 'Absent' || emp.status === 'Leave' ? '-' : emp.checkIn}
-                                                </td>
-                                                <td style={styles.td}>
-                                                    {emp.status === 'Absent' || emp.status === 'Leave' ? '-' : emp.checkOut}
-                                                </td>
-                                                <td style={styles.td}>
-                                                    <span style={{
-                                                        ...styles.badge,
-                                                        background: statusStyle.bg,
-                                                        color: statusStyle.color
-                                                    }}>
-                                                        {emp.status}
-                                                    </span>
-                                                </td>
-                                            </tr>
+                                                    <div style={{ fontSize: '1.25rem', fontWeight: 600, color: presentCount >= 4 ? '#38ef7d' : presentCount >= 3 ? '#ffb347' : '#f5576c' }}>
+                                                        {presentCount}/5 days
+                                                    </div>
+                                                </div>
+                                                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                                    {weekData.map((d, i) => (
+                                                        <div key={i} style={{
+                                                            flex: 1,
+                                                            textAlign: 'center',
+                                                            padding: '0.5rem',
+                                                            borderRadius: 8,
+                                                            background: d.status === 'Present' ? '#38ef7d15' : d.status === 'Absent' ? '#f5576c15' : '#ffb34715',
+                                                            color: d.status === 'Present' ? '#38ef7d' : d.status === 'Absent' ? '#f5576c' : '#ffb347'
+                                                        }}>
+                                                            <div style={{ fontSize: '0.7rem', marginBottom: '0.25rem' }}>{d.day}</div>
+                                                            <div style={{ fontSize: '1rem' }}>{d.status === 'Present' ? '✓' : d.status === 'Absent' ? '✗' : '½'}</div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
                                         );
                                     })}
-                                </tbody>
-                            </table>
-                        </div>
+                                </div>
+                            )}
+
+                            {viewMode === 'monthly' && (
+                                <div style={styles.tableWrapper}>
+                                    <table style={styles.table}>
+                                        <thead>
+                                            <tr>
+                                                <th style={styles.th}>Employee</th>
+                                                <th style={styles.th}>Present</th>
+                                                <th style={styles.th}>Absent</th>
+                                                <th style={styles.th}>Half-day</th>
+                                                <th style={styles.th}>Leave</th>
+                                                <th style={styles.th}>Attendance %</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {employees.map((emp) => {
+                                                // Mock monthly data
+                                                const present = 18 + Math.floor(Math.random() * 5);
+                                                const absent = Math.floor(Math.random() * 3);
+                                                const halfDay = Math.floor(Math.random() * 2);
+                                                const leave = Math.floor(Math.random() * 2);
+                                                const total = present + absent + halfDay + leave;
+                                                const rate = total > 0 ? Math.round((present / total) * 100) : 0;
+
+                                                return (
+                                                    <tr key={emp._id} style={styles.tr}>
+                                                        <td style={styles.td}>
+                                                            <div style={styles.nameCell}>
+                                                                <div style={styles.avatar}>
+                                                                    {emp.firstName?.[0]}{emp.lastName?.[0]}
+                                                                </div>
+                                                                <div>
+                                                                    <div>{emp.firstName} {emp.lastName}</div>
+                                                                    <div style={styles.email}>{emp.employeeId}</div>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                        <td style={styles.td}>
+                                                            <span style={{ ...styles.badge, background: '#38ef7d20', color: '#38ef7d' }}>{present}</span>
+                                                        </td>
+                                                        <td style={styles.td}>
+                                                            <span style={{ ...styles.badge, background: '#f5576c20', color: '#f5576c' }}>{absent}</span>
+                                                        </td>
+                                                        <td style={styles.td}>
+                                                            <span style={{ ...styles.badge, background: '#ffb34720', color: '#ffb347' }}>{halfDay}</span>
+                                                        </td>
+                                                        <td style={styles.td}>
+                                                            <span style={{ ...styles.badge, background: '#667eea20', color: '#667eea' }}>{leave}</span>
+                                                        </td>
+                                                        <td style={styles.td}>
+                                                            <span style={{
+                                                                fontSize: '1.1rem',
+                                                                fontWeight: 600,
+                                                                color: rate >= 80 ? '#38ef7d' : rate >= 60 ? '#ffb347' : '#f5576c'
+                                                            }}>
+                                                                {rate}%
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                );
+                                            })}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            )}
+                        </>
                     )}
                 </div>
             </main>
