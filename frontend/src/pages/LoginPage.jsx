@@ -74,13 +74,14 @@ export default function LoginPage() {
                     )}
 
                     <Input
-                        label="Employee ID"
+                        label="Email Address"
                         name="employeeId"
+                        type="email"
                         value={formData.employeeId}
                         onChange={handleChange}
-                        placeholder="Enter your Employee ID"
+                        placeholder="Enter your email"
                         required
-                        autoComplete="username"
+                        autoComplete="email"
                     />
 
                     <Input

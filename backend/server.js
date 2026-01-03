@@ -92,11 +92,17 @@ app.post('/api/auth/login', async (req, res) => {
         const { employeeId, password } = req.body;
 
         if (!employeeId || !password) {
-            return res.status(400).json({ error: 'Employee ID and password are required' });
+            return res.status(400).json({ error: 'Email/Employee ID and password are required' });
         }
 
-        // Find user by employeeId
-        const user = await User.findOne({ employeeId });
+        // Find user by employeeId OR email
+        const user = await User.findOne({
+            $or: [
+                { employeeId: employeeId },
+                { email: employeeId.toLowerCase() } // Treat input as email if it matches
+            ]
+        });
+
         if (!user) {
             return res.status(401).json({ error: 'Invalid credentials' });
         }

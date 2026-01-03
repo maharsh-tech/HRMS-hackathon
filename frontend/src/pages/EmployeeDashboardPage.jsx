@@ -280,25 +280,37 @@ export default function EmployeeDashboardPage() {
                             </div>
                         </div>
 
-                        {/* Recent Leave Requests */}
+                        {/* Recent Activity Feed */}
                         <div style={styles.card}>
-                            <h3 style={styles.cardTitle}>Recent Leave Requests</h3>
-                            {myLeaves.length === 0 ? <p style={styles.empty}>No leave requests.</p> : (
-                                <div style={styles.tableWrapper}>
-                                    <table style={styles.table}>
-                                        <thead><tr><th style={styles.th}>Type</th><th style={styles.th}>Date</th><th style={styles.th}>Status</th></tr></thead>
-                                        <tbody>
-                                            {myLeaves.slice(0, 3).map(l => (
-                                                <tr key={l._id} style={styles.tr}>
-                                                    <td style={styles.td}>{l.type}</td>
-                                                    <td style={styles.td}>{new Date(l.startDate).toLocaleDateString()}</td>
-                                                    <td style={styles.td}><span style={{...styles.badge, ...getStatusStyle(l.status)}}>{l.status}</span></td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            )}
+                        
+                            <h3 style={styles.cardTitle}>Recent Activity</h3>
+                            <div style={styles.activityFeed}>
+                                {myAttendance.slice(0, 3).map(att => (
+                                    <div key={'att'+att._id} style={styles.activityItem}>
+                                        <div style={{...styles.activityIcon, background: '#38ef7d20', color: '#38ef7d'}}>
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 6L9 17l-5-5"/></svg>
+                                        </div>
+                                        <div>
+                                            <p style={styles.activityText}>Marked attendance as <strong>{att.status}</strong></p>
+                                            <p style={styles.activityTime}>{new Date(att.date).toLocaleDateString()} at {att.checkIn || 'N/A'}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                                {myLeaves.slice(0, 2).map(leave => (
+                                    <div key={'leave'+leave._id} style={styles.activityItem}>
+                                        <div style={{...styles.activityIcon, background: '#ffb34720', color: '#ffb347'}}>
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>
+                                        </div>
+                                        <div>
+                                            <p style={styles.activityText}>Applied for <strong>{leave.type}</strong> ({leave.days} days)</p>
+                                            <p style={styles.activityTime}>Status: <span style={{color: getStatusStyle(leave.status).color}}>{leave.status}</span> • {new Date(leave.createdAt).toLocaleDateString()}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                                {myAttendance.length === 0 && myLeaves.length === 0 && (
+                                    <p style={{color: '#a0a0b0', fontSize: '0.9rem', textAlign: 'center', padding: '1rem'}}>No recent activity.</p>
+                                )}
+                            </div>
                         </div>
                     </>
                 )}
