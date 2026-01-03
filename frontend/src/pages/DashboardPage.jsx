@@ -77,37 +77,37 @@ export default function DashboardPage() {
                 </div>
 
                 <nav style={styles.nav}>
-                    <div style={{...styles.navItem, ...(activeNav === 'dashboard' ? styles.navItemActive : {})}} onClick={() => setActiveNav('dashboard')}>
+                    <div style={{ ...styles.navItem, ...(activeNav === 'dashboard' ? styles.navItemActive : {}) }} onClick={() => setActiveNav('dashboard')}>
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /></svg>
                         <span>Dashboard</span>
                     </div>
 
-                    <div style={{...styles.navItem, ...(activeNav === 'salaries' ? styles.navItemActive : {})}} onClick={() => setActiveNav('salaries')}>
+                    <div style={{ ...styles.navItem, ...(activeNav === 'salaries' ? styles.navItemActive : {}) }} onClick={() => setActiveNav('salaries')}>
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></svg>
                         <span>Salaries</span>
                     </div>
 
-                    <Link to="/admin/create-employee" style={{...styles.navItem, textDecoration: 'none'}}>
+                    <Link to="/admin/create-employee" style={{ ...styles.navItem, textDecoration: 'none' }}>
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="8.5" cy="7" r="4" /><line x1="20" y1="8" x2="20" y2="14" /><line x1="23" y1="11" x2="17" y2="11" /></svg>
                         <span>Add Employee</span>
                     </Link>
 
-                    <Link to="/employees" style={{...styles.navItem, textDecoration: 'none'}}>
+                    <Link to="/employees" style={{ ...styles.navItem, textDecoration: 'none' }}>
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
                         <span>Employees</span>
                     </Link>
 
-                    <Link to="/attendance" style={{...styles.navItem, textDecoration: 'none'}}>
+                    <Link to="/attendance" style={{ ...styles.navItem, textDecoration: 'none' }}>
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /></svg>
                         <span>Attendance</span>
                     </Link>
 
-                    <Link to="/leave" style={{...styles.navItem, textDecoration: 'none'}}>
+                    <Link to="/leave" style={{ ...styles.navItem, textDecoration: 'none' }}>
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /></svg>
                         <span>Leave Management</span>
                     </Link>
 
-                    <Link to="/change-password" style={{...styles.navItem, textDecoration: 'none'}}>
+                    <Link to="/change-password" style={{ ...styles.navItem, textDecoration: 'none' }}>
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
                         <span>Change Password</span>
                     </Link>
@@ -131,9 +131,9 @@ export default function DashboardPage() {
                 {activeNav === 'dashboard' && (
                     <>
                         <div style={styles.statsGrid}>
-                            <div style={{...styles.statCard, background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'}}><div><p style={styles.statNumber}>{stats.totalEmployees}</p><p style={styles.statLabel}>Total Employees</p></div></div>
-                            <div style={{...styles.statCard, background: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)'}}><div><p style={styles.statNumber}>{stats.admins}</p><p style={styles.statLabel}>Admins</p></div></div>
-                            <div style={{...styles.statCard, background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)'}}><div><p style={styles.statNumber}>{stats.regularEmployees}</p><p style={styles.statLabel}>Employees</p></div></div>
+                            <div style={{ ...styles.statCard, background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}><div><p style={styles.statNumber}>{stats.totalEmployees}</p><p style={styles.statLabel}>Total Employees</p></div></div>
+                            <div style={{ ...styles.statCard, background: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)' }}><div><p style={styles.statNumber}>{stats.admins}</p><p style={styles.statLabel}>Admins</p></div></div>
+                            <div style={{ ...styles.statCard, background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' }}><div><p style={styles.statNumber}>{stats.regularEmployees}</p><p style={styles.statLabel}>Employees</p></div></div>
                         </div>
 
                         <div style={styles.tableCard}>
@@ -146,7 +146,7 @@ export default function DashboardPage() {
                                             <tr key={emp._id} style={styles.tr}>
                                                 <td style={styles.td}><code style={styles.code}>{emp.employeeId}</code></td>
                                                 <td style={styles.td}>{emp.firstName} {emp.lastName}</td>
-                                                <td style={styles.td}><span style={{...styles.badge, background: emp.role === 'admin' ? '#667eea20' : '#11998e20', color: emp.role === 'admin' ? '#667eea' : '#11998e'}}>{emp.role}</span></td>
+                                                <td style={styles.td}><span style={{ ...styles.badge, background: emp.role === 'admin' ? '#667eea20' : '#11998e20', color: emp.role === 'admin' ? '#667eea' : '#11998e' }}>{emp.role}</span></td>
                                             </tr>
                                         ))}
                                     </tbody>
@@ -166,11 +166,11 @@ export default function DashboardPage() {
                                     {employees.filter(e => e.role !== 'admin').map(emp => ( // Filter out admins if needed, or keep all
                                         <tr key={emp._id} style={styles.tr}>
                                             <td style={styles.td}>{emp.firstName} {emp.lastName}</td>
-                                            <td style={styles.td}>${emp.salaryDetails?.basicSalary || 0}</td>
-                                            <td style={styles.td}>${emp.salaryDetails?.hra || 0}</td>
-                                            <td style={{...styles.td, color: '#38ef7d', fontWeight: 600}}>${emp.salaryDetails?.netSalary || 0}</td>
+                                            <td style={styles.td}>₹{emp.salaryDetails?.basic?.toLocaleString('en-IN') || 0}</td>
+                                            <td style={styles.td}>₹{emp.salaryDetails?.hra?.toLocaleString('en-IN') || 0}</td>
+                                            <td style={{ ...styles.td, color: '#38ef7d', fontWeight: 600 }}>₹{emp.salaryDetails?.netSalary?.toLocaleString('en-IN') || 0}</td>
                                             <td style={styles.td}>
-                                                <button style={styles.actionBtn} onClick={() => handleEditSalary(emp)}>Edit</button>
+                                                <button style={styles.actionBtn} onClick={() => navigate(`/admin/employees/${emp._id}`)}>Edit</button>
                                             </td>
                                         </tr>
                                     ))}
@@ -187,15 +187,15 @@ export default function DashboardPage() {
                             <h3 style={styles.modalTitle}>Edit Salary for {editingEmployee.firstName}</h3>
                             <form onSubmit={handleSalaryUpdate}>
                                 <div style={styles.formGrid}>
-                                    <div style={styles.formGroup}><label style={styles.formLabel}>Basic Salary</label><input type="number" style={styles.input} value={salaryForm.basicSalary || ''} onChange={e => setSalaryForm({...salaryForm, basicSalary: Number(e.target.value)})} /></div>
-                                    <div style={styles.formGroup}><label style={styles.formLabel}>HRA</label><input type="number" style={styles.input} value={salaryForm.hra || ''} onChange={e => setSalaryForm({...salaryForm, hra: Number(e.target.value)})} /></div>
-                                    <div style={styles.formGroup}><label style={styles.formLabel}>Allowances</label><input type="number" style={styles.input} value={salaryForm.allowances || ''} onChange={e => setSalaryForm({...salaryForm, allowances: Number(e.target.value)})} /></div>
-                                    <div style={styles.formGroup}><label style={styles.formLabel}>Deductions</label><input type="number" style={styles.input} value={salaryForm.deductions || ''} onChange={e => setSalaryForm({...salaryForm, deductions: Number(e.target.value)})} /></div>
-                                    <div style={styles.formGroup}><label style={styles.formLabel}>Net Salary</label><input type="number" style={styles.input} value={salaryForm.netSalary || ''} onChange={e => setSalaryForm({...salaryForm, netSalary: Number(e.target.value)})} /></div>
+                                    <div style={styles.formGroup}><label style={styles.formLabel}>Basic Salary</label><input type="number" style={styles.input} value={salaryForm.basicSalary || ''} onChange={e => setSalaryForm({ ...salaryForm, basicSalary: Number(e.target.value) })} /></div>
+                                    <div style={styles.formGroup}><label style={styles.formLabel}>HRA</label><input type="number" style={styles.input} value={salaryForm.hra || ''} onChange={e => setSalaryForm({ ...salaryForm, hra: Number(e.target.value) })} /></div>
+                                    <div style={styles.formGroup}><label style={styles.formLabel}>Allowances</label><input type="number" style={styles.input} value={salaryForm.allowances || ''} onChange={e => setSalaryForm({ ...salaryForm, allowances: Number(e.target.value) })} /></div>
+                                    <div style={styles.formGroup}><label style={styles.formLabel}>Deductions</label><input type="number" style={styles.input} value={salaryForm.deductions || ''} onChange={e => setSalaryForm({ ...salaryForm, deductions: Number(e.target.value) })} /></div>
+                                    <div style={styles.formGroup}><label style={styles.formLabel}>Net Salary</label><input type="number" style={styles.input} value={salaryForm.netSalary || ''} onChange={e => setSalaryForm({ ...salaryForm, netSalary: Number(e.target.value) })} /></div>
                                 </div>
                                 <div style={styles.buttonGroup}>
-                                    <button type="button" style={{...styles.btn, ...styles.btnSecondary}} onClick={() => setEditingEmployee(null)}>Cancel</button>
-                                    <button type="submit" style={{...styles.btn, ...styles.btnPrimary}}>Save Salary</button>
+                                    <button type="button" style={{ ...styles.btn, ...styles.btnSecondary }} onClick={() => setEditingEmployee(null)}>Cancel</button>
+                                    <button type="submit" style={{ ...styles.btn, ...styles.btnPrimary }}>Save Salary</button>
                                 </div>
                             </form>
                         </div>
