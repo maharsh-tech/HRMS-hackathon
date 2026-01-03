@@ -25,6 +25,8 @@ export default function DashboardPage() {
             setEmployees(data.employees || []);
         } catch (error) {
             console.error('Failed to fetch employees:', error);
+            // Don't use mock data, just show nothing/error
+            setEmployees([]);
         } finally {
             setLoading(false);
         }
