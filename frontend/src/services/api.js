@@ -26,10 +26,15 @@ export async function login(employeeId, password) {
     let data;
     try {
         const text = await res.text();
-        data = JSON.parse(text);
+        try {
+            data = JSON.parse(text);
+        } catch (e) {
+            console.error('Login Non-JSON response:', text);
+            // Show the first 100 chars of the response to help debug
+            throw new Error(`Server error: ${text.substring(0, 100)}`);
+        }
     } catch (e) {
-        console.error('Login Non-JSON response:', e);
-        throw new Error('Server error: Invalid response format');
+        throw new Error(e.message);
     }
 
     if (!res.ok) {
