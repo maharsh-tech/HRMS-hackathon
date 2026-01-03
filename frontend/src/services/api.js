@@ -216,7 +216,15 @@ export async function updateProfile(token, profileData) {
         },
         body: JSON.stringify(profileData),
     });
-    const data = await res.json();
+    let data;
+    try {
+        const text = await res.text();
+        data = JSON.parse(text);
+    } catch (e) {
+        console.error('Update Profile Non-JSON response:', e);
+        throw new Error('Server returned non-JSON response');
+    }
+
     if (!res.ok) throw new Error(data.error || 'Failed to update profile');
     return data;
 }
@@ -230,8 +238,20 @@ export async function uploadImageToImgBB(imageFile) {
         body: formData
     });
 
-    const data = await res.json();
-    if (!data.success) throw new Error('Image upload failed');
+    let data;
+    try {
+        const text = await res.text();
+        try {
+            data = JSON.parse(text);
+        } catch (e) {
+            console.error('ImgBB Non-JSON response:', text);
+            throw new Error('ImgBB returned non-JSON response: ' + text.substring(0, 50));
+        }
+    } catch (error) {
+        throw new Error('Failed to parse ImgBB response');
+    }
+
+    if (!data.success) throw new Error('Image upload failed: ' + (data.error?.message || 'Unknown error'));
     return data.data.url;
 }
 
@@ -244,7 +264,16 @@ export async function updateEmployee(token, id, data) {
         },
         body: JSON.stringify(data),
     });
-    const result = await res.json();
+
+    let result;
+    try {
+        const text = await res.text();
+        result = JSON.parse(text);
+    } catch (e) {
+        console.error('Update Employee Non-JSON response:', e);
+        throw new Error('Server returned non-JSON response');
+    }
+
     if (!res.ok) throw new Error(result.error || 'Failed to update employee');
     return result;
 }
