@@ -33,7 +33,7 @@ export default function EmployeesPage() {
         navigate('/login', { replace: true });
     };
 
-    const filteredEmployees = employees.filter(emp => 
+    const filteredEmployees = employees.filter(emp =>
         emp.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         emp.lastName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         emp.employeeId?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -54,7 +54,7 @@ export default function EmployeesPage() {
                 </div>
 
                 <nav style={styles.nav}>
-                    <Link to="/dashboard" style={{...styles.navItem, textDecoration: 'none'}}>
+                    <Link to="/dashboard" style={{ ...styles.navItem, textDecoration: 'none' }}>
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <rect x="3" y="3" width="7" height="7" />
                             <rect x="14" y="3" width="7" height="7" />
@@ -65,7 +65,7 @@ export default function EmployeesPage() {
                     </Link>
 
                     {isAdmin && (
-                        <Link to="/admin/create-employee" style={{...styles.navItem, textDecoration: 'none'}}>
+                        <Link to="/admin/create-employee" style={{ ...styles.navItem, textDecoration: 'none' }}>
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                 <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
                                 <circle cx="8.5" cy="7" r="4" />
@@ -76,7 +76,7 @@ export default function EmployeesPage() {
                         </Link>
                     )}
 
-                    <Link to="/employees" style={{...styles.navItem, ...styles.navItemActive, textDecoration: 'none'}}>
+                    <Link to="/employees" style={{ ...styles.navItem, ...styles.navItemActive, textDecoration: 'none' }}>
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
                             <circle cx="9" cy="7" r="4" />
@@ -86,7 +86,7 @@ export default function EmployeesPage() {
                         <span>Employees</span>
                     </Link>
 
-                    <Link to="/attendance" style={{...styles.navItem, textDecoration: 'none'}}>
+                    <Link to="/attendance" style={{ ...styles.navItem, textDecoration: 'none' }}>
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
                             <line x1="16" y1="2" x2="16" y2="6" />
@@ -96,7 +96,7 @@ export default function EmployeesPage() {
                         <span>Attendance</span>
                     </Link>
 
-                    <Link to="/change-password" style={{...styles.navItem, textDecoration: 'none'}}>
+                    <Link to="/change-password" style={{ ...styles.navItem, textDecoration: 'none' }}>
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
                             <path d="M7 11V7a5 5 0 0 1 10 0v4" />
@@ -125,7 +125,7 @@ export default function EmployeesPage() {
                         <p style={styles.headerSubtitle}>Manage all employees in the system</p>
                     </div>
                     {isAdmin && (
-                        <button 
+                        <button
                             style={styles.addBtn}
                             onClick={() => navigate('/admin/create-employee')}
                         >
@@ -166,6 +166,7 @@ export default function EmployeesPage() {
                                         <th style={styles.th}>Email</th>
                                         <th style={styles.th}>Role</th>
                                         <th style={styles.th}>Status</th>
+                                        <th style={styles.th}>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -200,6 +201,14 @@ export default function EmployeesPage() {
                                                 }}>
                                                     {emp.mustChangePassword ? 'Pending' : 'Active'}
                                                 </span>
+                                            </td>
+                                            <td style={styles.td}>
+                                                <button
+                                                    style={styles.editBtn}
+                                                    onClick={() => navigate(`/admin/employees/${emp._id}`)}
+                                                >
+                                                    ✏️ Edit
+                                                </button>
                                             </td>
                                         </tr>
                                     ))}
@@ -396,5 +405,15 @@ const styles = {
         textAlign: 'center',
         padding: '2rem',
         color: '#a0a0b0',
+    },
+    editBtn: {
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        border: 'none',
+        color: '#fff',
+        padding: '0.5rem 1rem',
+        borderRadius: 6,
+        cursor: 'pointer',
+        fontSize: '0.8rem',
+        fontWeight: 500,
     },
 };

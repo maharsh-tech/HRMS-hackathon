@@ -9,6 +9,7 @@ import CreateEmployeePage from './pages/CreateEmployeePage';
 import DashboardPage from './pages/DashboardPage';
 import EmployeeDashboardPage from './pages/EmployeeDashboardPage';
 import EmployeesPage from './pages/EmployeesPage';
+import EmployeeEditPage from './pages/EmployeeEditPage';
 import AttendanceReportPage from './pages/AttendanceReportPage';
 import LeaveManagementPage from './pages/LeaveManagementPage';
 
@@ -92,6 +93,15 @@ function App() {
       />
 
       {/* Admin Only Routes */}
+      <Route
+        path="/admin/employees/:id"
+        element={
+          <ProtectedRoute requireAdmin>
+            <EmployeeEditPage />
+          </ProtectedRoute>
+        }
+      />
+
       <Route
         path="/admin/create-employee"
         element={

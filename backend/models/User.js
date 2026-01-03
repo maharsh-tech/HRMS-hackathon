@@ -91,13 +91,29 @@ const userSchema = new mongoose.Schema({
     },
     // Salary Details (Confidential - typically Admin only write)
     salaryDetails: {
-        basicSalary: { type: Number, default: 0 },
-        hra: { type: Number, default: 0 },
-        allowances: { type: Number, default: 0 },
-        deductions: { type: Number, default: 0 },
+        // Base wage
+        wage: { type: Number, default: 0 },
+        wageType: { type: String, default: 'Fixed' },
+
+        // Salary Components (auto-calculated from wage)
+        basic: { type: Number, default: 0 },           // 50% of wage
+        hra: { type: Number, default: 0 },             // 50% of basic
+        standardAllowance: { type: Number, default: 4167 },
+        performanceBonus: { type: Number, default: 0 }, // 8.33% of wage
+        lta: { type: Number, default: 0 },              // 8.333% of wage
+        fixedAllowance: { type: Number, default: 0 },   // wage - sum of above
+
+        // Deductions
+        pfRate: { type: Number, default: 12 },          // PF rate in %
+        pfAmount: { type: Number, default: 0 },         // 12% of basic
+        professionalTax: { type: Number, default: 200 },
+
+        // Totals
+        grossSalary: { type: Number, default: 0 },
+        totalDeductions: { type: Number, default: 0 },
         netSalary: { type: Number, default: 0 },
-        minSalary: { type: Number, default: 0 },
-        maxSalary: { type: Number, default: 0 },
+
+        // Bank Details
         bankAccount: {
             accountNumber: { type: String, default: '' },
             bankName: { type: String, default: '' },
