@@ -45,7 +45,15 @@ export default async function handler(req, res) {
             return res.status(400).json({ error: 'Employee ID and password are required' });
         }
 
-        const user = await UserModel.findOne({ employeeId });
+        const identifier = employeeId.trim();
+
+        // Find user by employeeId OR email
+        const user = await UserModel.findOne({
+            $or: [
+                { employeeId: identifier },
+                { email: identifier.toLowerCase() }
+            ]
+        });
         if (!user) {
             return res.status(401).json({ error: 'Invalid credentials' });
         }
