@@ -187,21 +187,21 @@ export default function AttendanceReportPage() {
 
                 {/* Stats Cards */}
                 <div style={styles.statsGrid}>
-                    <div style={{ ...styles.statCard, background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
+                    <div style={styles.statCard}>
                         <div style={styles.statNumber}>{stats.total}</div>
                         <div style={styles.statLabel}>Total Employees</div>
                     </div>
-                    <div style={{ ...styles.statCard, background: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)' }}>
-                        <div style={styles.statNumber}>{stats.present}</div>
+                    <div style={styles.statCard}>
+                        <div style={{ ...styles.statNumber, color: '#22c55e' }}>{stats.present}</div>
                         <div style={styles.statLabel}>Present Today</div>
                     </div>
-                    <div style={{ ...styles.statCard, background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' }}>
-                        <div style={styles.statNumber}>{stats.absent}</div>
+                    <div style={styles.statCard}>
+                        <div style={{ ...styles.statNumber, color: '#ef4444' }}>{stats.absent}</div>
                         <div style={styles.statLabel}>Absent</div>
                     </div>
-                    <div style={{ ...styles.statCard, background: 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)' }}>
-                        <div style={{ ...styles.statNumber, color: '#333' }}>{stats.leave}</div>
-                        <div style={{ ...styles.statLabel, color: '#333' }}>On Leave</div>
+                    <div style={styles.statCard}>
+                        <div style={{ ...styles.statNumber, color: '#3b82f6' }}>{stats.leave}</div>
+                        <div style={styles.statLabel}>On Leave</div>
                     </div>
                 </div>
 
@@ -397,209 +397,39 @@ export default function AttendanceReportPage() {
 }
 
 const styles = {
-    container: {
-        display: 'flex',
-        minHeight: '100vh',
-        background: '#0f0f23',
-        color: '#fff',
-    },
-    sidebar: {
-        width: 260,
-        background: 'linear-gradient(180deg, #1a1a2e 0%, #16213e 100%)',
-        padding: '1.5rem',
-        display: 'flex',
-        flexDirection: 'column',
-        borderRight: '1px solid #ffffff10',
-    },
-    logo: {
-        display: 'flex',
-        alignItems: 'center',
-        gap: '0.75rem',
-        marginBottom: '2rem',
-    },
-    logoIcon: {
-        width: 40,
-        height: 40,
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        borderRadius: 10,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    logoText: {
-        fontSize: '1.25rem',
-        fontWeight: 700,
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        WebkitBackgroundClip: 'text',
-        WebkitTextFillColor: 'transparent',
-    },
-    nav: {
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '0.5rem',
-    },
-    navItem: {
-        display: 'flex',
-        alignItems: 'center',
-        gap: '0.75rem',
-        padding: '0.875rem 1rem',
-        borderRadius: 10,
-        cursor: 'pointer',
-        color: '#a0a0b0',
-        transition: 'all 0.2s ease',
-        fontSize: '0.9rem',
-    },
-    navItemActive: {
-        background: 'linear-gradient(135deg, #667eea20 0%, #764ba220 100%)',
-        color: '#667eea',
-        borderLeft: '3px solid #667eea',
-    },
-    sidebarFooter: {
-        marginTop: 'auto',
-        borderTop: '1px solid #ffffff10',
-        paddingTop: '1rem',
-    },
-    main: {
-        flex: 1,
-        padding: '2rem',
-        overflowY: 'auto',
-    },
-    header: {
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: '2rem',
-    },
-    headerTitle: {
-        fontSize: '2rem',
-        fontWeight: 700,
-        margin: 0,
-    },
-    headerSubtitle: {
-        color: '#a0a0b0',
-        margin: '0.25rem 0 0',
-    },
-    dateContainer: {
-        display: 'flex',
-        alignItems: 'center',
-        gap: '1rem',
-    },
-    dateInput: {
-        background: '#1a1a2e',
-        border: '1px solid #ffffff20',
-        borderRadius: 10,
-        padding: '0.75rem 1rem',
-        color: '#fff',
-        fontSize: '0.9rem',
-    },
-    statsGrid: {
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-        gap: '1.5rem',
-        marginBottom: '2rem',
-    },
-    statCard: {
-        padding: '1.5rem',
-        borderRadius: 16,
-        textAlign: 'center',
-    },
-    statNumber: {
-        fontSize: '2.5rem',
-        fontWeight: 700,
-        marginBottom: '0.25rem',
-    },
-    statLabel: {
-        fontSize: '0.9rem',
-        opacity: 0.9,
-    },
-    tableCard: {
-        background: '#1a1a2e',
-        borderRadius: 16,
-        padding: '1.5rem',
-        border: '1px solid #ffffff10',
-    },
-    tableHeader: {
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: '1rem',
-    },
-    tableTitle: {
-        margin: 0,
-        fontSize: '1.25rem',
-    },
-    refreshBtn: {
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        border: 'none',
-        color: '#fff',
-        padding: '0.5rem 1rem',
-        borderRadius: 8,
-        cursor: 'pointer',
-        fontSize: '0.875rem',
-    },
-    tableWrapper: {
-        overflowX: 'auto',
-    },
-    table: {
-        width: '100%',
-        borderCollapse: 'collapse',
-    },
-    th: {
-        textAlign: 'left',
-        padding: '1rem',
-        color: '#a0a0b0',
-        fontWeight: 500,
-        fontSize: '0.875rem',
-        borderBottom: '1px solid #ffffff10',
-    },
-    tr: {
-        borderBottom: '1px solid #ffffff08',
-    },
-    td: {
-        padding: '1rem',
-        fontSize: '0.9rem',
-    },
-    code: {
-        background: '#667eea20',
-        color: '#667eea',
-        padding: '0.25rem 0.5rem',
-        borderRadius: 4,
-        fontSize: '0.8rem',
-    },
-    nameCell: {
-        display: 'flex',
-        alignItems: 'center',
-        gap: '0.75rem',
-    },
-    avatar: {
-        width: 40,
-        height: 40,
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        borderRadius: '50%',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        fontSize: '0.8rem',
-        fontWeight: 600,
-    },
-    email: {
-        fontSize: '0.8rem',
-        color: '#a0a0b0',
-    },
-    badge: {
-        padding: '0.25rem 0.75rem',
-        borderRadius: 50,
-        fontSize: '0.75rem',
-        fontWeight: 500,
-    },
-    loading: {
-        textAlign: 'center',
-        padding: '2rem',
-        color: '#a0a0b0',
-    },
-    empty: {
-        textAlign: 'center',
-        padding: '2rem',
-        color: '#a0a0b0',
-    },
+    container: { display: 'flex', minHeight: '100vh', background: '#0a0a0a', color: '#fff' },
+    sidebar: { width: 260, background: '#111', padding: '1.5rem', display: 'flex', flexDirection: 'column', borderRight: '1px solid rgba(255,255,255,0.08)' },
+    logo: { display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '2rem' },
+    logoIcon: { width: 40, height: 40, background: '#1a1a1a', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(255,255,255,0.1)' },
+    logoText: { fontSize: '1.25rem', fontWeight: 600, color: '#fff' },
+    nav: { display: 'flex', flexDirection: 'column', gap: '0.25rem' },
+    navItem: { display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem 1rem', borderRadius: 8, cursor: 'pointer', color: 'rgba(255,255,255,0.6)', transition: 'all 0.2s ease', fontSize: '0.9rem' },
+    navItemActive: { background: 'rgba(255,255,255,0.08)', color: '#fff' },
+    sidebarFooter: { marginTop: 'auto', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '1rem' },
+    main: { flex: 1, padding: '2rem', overflowY: 'auto' },
+    header: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' },
+    headerTitle: { fontSize: '1.75rem', fontWeight: 600, margin: 0 },
+    headerSubtitle: { color: 'rgba(255,255,255,0.5)', margin: '0.25rem 0 0' },
+    dateContainer: { display: 'flex', alignItems: 'center', gap: '0.75rem' },
+    dateInput: { background: '#141414', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, padding: '0.6rem 0.75rem', color: '#fff', fontSize: '0.85rem' },
+    statsGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem', marginBottom: '1.5rem' },
+    statCard: { padding: '1.25rem', borderRadius: 12, textAlign: 'center', background: '#141414', border: '1px solid rgba(255,255,255,0.08)' },
+    statNumber: { fontSize: '2rem', fontWeight: 600, marginBottom: '0.25rem' },
+    statLabel: { fontSize: '0.8rem', color: 'rgba(255,255,255,0.6)' },
+    tableCard: { background: '#111', borderRadius: 12, padding: '1.25rem', border: '1px solid rgba(255,255,255,0.08)' },
+    tableHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' },
+    tableTitle: { margin: 0, fontSize: '1rem', fontWeight: 500 },
+    refreshBtn: { background: '#3b82f6', border: 'none', color: '#fff', padding: '0.5rem 1rem', borderRadius: 6, cursor: 'pointer', fontSize: '0.8rem' },
+    tableWrapper: { overflowX: 'auto' },
+    table: { width: '100%', borderCollapse: 'collapse' },
+    th: { textAlign: 'left', padding: '0.75rem', color: 'rgba(255,255,255,0.5)', fontWeight: 500, fontSize: '0.8rem', borderBottom: '1px solid rgba(255,255,255,0.08)' },
+    tr: { borderBottom: '1px solid rgba(255,255,255,0.05)' },
+    td: { padding: '0.75rem', fontSize: '0.85rem' },
+    code: { background: 'rgba(255,255,255,0.1)', color: '#fff', padding: '0.2rem 0.4rem', borderRadius: 4, fontSize: '0.75rem', fontFamily: 'monospace' },
+    nameCell: { display: 'flex', alignItems: 'center', gap: '0.75rem' },
+    avatar: { width: 36, height: 36, background: '#3b82f6', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', fontWeight: 600 },
+    email: { fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)' },
+    badge: { padding: '0.2rem 0.5rem', borderRadius: 4, fontSize: '0.7rem', fontWeight: 500 },
+    loading: { textAlign: 'center', padding: '2rem', color: 'rgba(255,255,255,0.5)' },
+    empty: { textAlign: 'center', padding: '2rem', color: 'rgba(255,255,255,0.5)' },
 };

@@ -24,13 +24,13 @@ export default function LeaveManagementPage() {
     };
 
     const handleApprove = (id) => {
-        setLeaveRequests(prev => prev.map(req => 
+        setLeaveRequests(prev => prev.map(req =>
             req.id === id ? { ...req, status: 'Approved' } : req
         ));
     };
 
     const handleReject = (id) => {
-        setLeaveRequests(prev => prev.map(req => 
+        setLeaveRequests(prev => prev.map(req =>
             req.id === id ? { ...req, status: 'Rejected' } : req
         ));
     };
@@ -53,8 +53,8 @@ export default function LeaveManagementPage() {
         }
     };
 
-    const filteredRequests = filterStatus === 'all' 
-        ? leaveRequests 
+    const filteredRequests = filterStatus === 'all'
+        ? leaveRequests
         : leaveRequests.filter(r => r.status === filterStatus);
 
     const stats = {
@@ -78,7 +78,7 @@ export default function LeaveManagementPage() {
                 </div>
 
                 <nav style={styles.nav}>
-                    <Link to="/dashboard" style={{...styles.navItem, textDecoration: 'none'}}>
+                    <Link to="/dashboard" style={{ ...styles.navItem, textDecoration: 'none' }}>
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <rect x="3" y="3" width="7" height="7" />
                             <rect x="14" y="3" width="7" height="7" />
@@ -89,7 +89,7 @@ export default function LeaveManagementPage() {
                     </Link>
 
                     {isAdmin && (
-                        <Link to="/admin/create-employee" style={{...styles.navItem, textDecoration: 'none'}}>
+                        <Link to="/admin/create-employee" style={{ ...styles.navItem, textDecoration: 'none' }}>
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                 <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
                                 <circle cx="8.5" cy="7" r="4" />
@@ -100,7 +100,7 @@ export default function LeaveManagementPage() {
                         </Link>
                     )}
 
-                    <Link to="/employees" style={{...styles.navItem, textDecoration: 'none'}}>
+                    <Link to="/employees" style={{ ...styles.navItem, textDecoration: 'none' }}>
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
                             <circle cx="9" cy="7" r="4" />
@@ -110,7 +110,7 @@ export default function LeaveManagementPage() {
                         <span>Employees</span>
                     </Link>
 
-                    <Link to="/attendance" style={{...styles.navItem, textDecoration: 'none'}}>
+                    <Link to="/attendance" style={{ ...styles.navItem, textDecoration: 'none' }}>
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
                             <line x1="16" y1="2" x2="16" y2="6" />
@@ -120,7 +120,7 @@ export default function LeaveManagementPage() {
                         <span>Attendance</span>
                     </Link>
 
-                    <Link to="/leave" style={{...styles.navItem, ...styles.navItemActive, textDecoration: 'none'}}>
+                    <Link to="/leave" style={{ ...styles.navItem, ...styles.navItemActive, textDecoration: 'none' }}>
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
                             <polyline points="14 2 14 8 20 8" />
@@ -130,7 +130,7 @@ export default function LeaveManagementPage() {
                         <span>Leave Management</span>
                     </Link>
 
-                    <Link to="/change-password" style={{...styles.navItem, textDecoration: 'none'}}>
+                    <Link to="/change-password" style={{ ...styles.navItem, textDecoration: 'none' }}>
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
                             <path d="M7 11V7a5 5 0 0 1 10 0v4" />
@@ -162,20 +162,20 @@ export default function LeaveManagementPage() {
 
                 {/* Stats Cards */}
                 <div style={styles.statsGrid}>
-                    <div style={{...styles.statCard, background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'}}>
+                    <div style={styles.statCard}>
                         <div style={styles.statNumber}>{stats.total}</div>
                         <div style={styles.statLabel}>Total Requests</div>
                     </div>
-                    <div style={{...styles.statCard, background: 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)'}}>
-                        <div style={{...styles.statNumber, color: '#333'}}>{stats.pending}</div>
-                        <div style={{...styles.statLabel, color: '#333'}}>Pending</div>
+                    <div style={styles.statCard}>
+                        <div style={{ ...styles.statNumber, color: '#f59e0b' }}>{stats.pending}</div>
+                        <div style={styles.statLabel}>Pending</div>
                     </div>
-                    <div style={{...styles.statCard, background: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)'}}>
-                        <div style={styles.statNumber}>{stats.approved}</div>
+                    <div style={styles.statCard}>
+                        <div style={{ ...styles.statNumber, color: '#22c55e' }}>{stats.approved}</div>
                         <div style={styles.statLabel}>Approved</div>
                     </div>
-                    <div style={{...styles.statCard, background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)'}}>
-                        <div style={styles.statNumber}>{stats.rejected}</div>
+                    <div style={styles.statCard}>
+                        <div style={{ ...styles.statNumber, color: '#ef4444' }}>{stats.rejected}</div>
                         <div style={styles.statLabel}>Rejected</div>
                     </div>
                 </div>
@@ -255,13 +255,13 @@ export default function LeaveManagementPage() {
                                                 <td style={styles.td}>
                                                     {req.status === 'Pending' && (
                                                         <div style={styles.actions}>
-                                                            <button 
+                                                            <button
                                                                 style={styles.approveBtn}
                                                                 onClick={() => handleApprove(req.id)}
                                                             >
                                                                 ✓
                                                             </button>
-                                                            <button 
+                                                            <button
                                                                 style={styles.rejectBtn}
                                                                 onClick={() => handleReject(req.id)}
                                                             >
@@ -284,200 +284,37 @@ export default function LeaveManagementPage() {
 }
 
 const styles = {
-    container: {
-        display: 'flex',
-        minHeight: '100vh',
-        background: '#0f0f23',
-        color: '#fff',
-    },
-    sidebar: {
-        width: 260,
-        background: 'linear-gradient(180deg, #1a1a2e 0%, #16213e 100%)',
-        padding: '1.5rem',
-        display: 'flex',
-        flexDirection: 'column',
-        borderRight: '1px solid #ffffff10',
-    },
-    logo: {
-        display: 'flex',
-        alignItems: 'center',
-        gap: '0.75rem',
-        marginBottom: '2rem',
-    },
-    logoIcon: {
-        width: 40,
-        height: 40,
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        borderRadius: 10,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    logoText: {
-        fontSize: '1.25rem',
-        fontWeight: 700,
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        WebkitBackgroundClip: 'text',
-        WebkitTextFillColor: 'transparent',
-    },
-    nav: {
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '0.5rem',
-    },
-    navItem: {
-        display: 'flex',
-        alignItems: 'center',
-        gap: '0.75rem',
-        padding: '0.875rem 1rem',
-        borderRadius: 10,
-        cursor: 'pointer',
-        color: '#a0a0b0',
-        transition: 'all 0.2s ease',
-        fontSize: '0.9rem',
-    },
-    navItemActive: {
-        background: 'linear-gradient(135deg, #667eea20 0%, #764ba220 100%)',
-        color: '#667eea',
-        borderLeft: '3px solid #667eea',
-    },
-    sidebarFooter: {
-        marginTop: 'auto',
-        borderTop: '1px solid #ffffff10',
-        paddingTop: '1rem',
-    },
-    main: {
-        flex: 1,
-        padding: '2rem',
-        overflowY: 'auto',
-    },
-    header: {
-        marginBottom: '2rem',
-    },
-    headerTitle: {
-        fontSize: '2rem',
-        fontWeight: 700,
-        margin: 0,
-    },
-    headerSubtitle: {
-        color: '#a0a0b0',
-        margin: '0.25rem 0 0',
-    },
-    statsGrid: {
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-        gap: '1.5rem',
-        marginBottom: '2rem',
-    },
-    statCard: {
-        padding: '1.5rem',
-        borderRadius: 16,
-        textAlign: 'center',
-    },
-    statNumber: {
-        fontSize: '2rem',
-        fontWeight: 700,
-        marginBottom: '0.25rem',
-    },
-    statLabel: {
-        fontSize: '0.875rem',
-        opacity: 0.9,
-    },
-    filterTabs: {
-        display: 'flex',
-        gap: '0.5rem',
-        marginBottom: '1.5rem',
-    },
-    filterTab: {
-        background: '#1a1a2e',
-        border: '1px solid #ffffff20',
-        color: '#a0a0b0',
-        padding: '0.5rem 1rem',
-        borderRadius: 8,
-        cursor: 'pointer',
-        fontSize: '0.875rem',
-    },
-    filterTabActive: {
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        border: 'none',
-        color: '#fff',
-    },
-    tableCard: {
-        background: '#1a1a2e',
-        borderRadius: 16,
-        padding: '1.5rem',
-        border: '1px solid #ffffff10',
-    },
-    tableWrapper: {
-        overflowX: 'auto',
-    },
-    table: {
-        width: '100%',
-        borderCollapse: 'collapse',
-    },
-    th: {
-        textAlign: 'left',
-        padding: '1rem',
-        color: '#a0a0b0',
-        fontWeight: 500,
-        fontSize: '0.875rem',
-        borderBottom: '1px solid #ffffff10',
-    },
-    tr: {
-        borderBottom: '1px solid #ffffff08',
-    },
-    td: {
-        padding: '1rem',
-        fontSize: '0.9rem',
-    },
-    nameCell: {
-        display: 'flex',
-        alignItems: 'center',
-        gap: '0.75rem',
-    },
-    avatar: {
-        width: 40,
-        height: 40,
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        borderRadius: '50%',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        fontSize: '0.8rem',
-        fontWeight: 600,
-    },
-    email: {
-        fontSize: '0.75rem',
-        color: '#a0a0b0',
-    },
-    badge: {
-        padding: '0.25rem 0.75rem',
-        borderRadius: 50,
-        fontSize: '0.75rem',
-        fontWeight: 500,
-    },
-    actions: {
-        display: 'flex',
-        gap: '0.5rem',
-    },
-    approveBtn: {
-        background: '#38ef7d',
-        border: 'none',
-        color: '#000',
-        width: 28,
-        height: 28,
-        borderRadius: 6,
-        cursor: 'pointer',
-        fontSize: '0.9rem',
-    },
-    rejectBtn: {
-        background: '#f5576c',
-        border: 'none',
-        color: '#fff',
-        width: 28,
-        height: 28,
-        borderRadius: 6,
-        cursor: 'pointer',
-        fontSize: '0.9rem',
-    },
+    container: { display: 'flex', minHeight: '100vh', background: '#0a0a0a', color: '#fff' },
+    sidebar: { width: 260, background: '#111', padding: '1.5rem', display: 'flex', flexDirection: 'column', borderRight: '1px solid rgba(255,255,255,0.08)' },
+    logo: { display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '2rem' },
+    logoIcon: { width: 40, height: 40, background: '#1a1a1a', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(255,255,255,0.1)' },
+    logoText: { fontSize: '1.25rem', fontWeight: 600, color: '#fff' },
+    nav: { display: 'flex', flexDirection: 'column', gap: '0.25rem' },
+    navItem: { display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem 1rem', borderRadius: 8, cursor: 'pointer', color: 'rgba(255,255,255,0.6)', transition: 'all 0.2s ease', fontSize: '0.9rem' },
+    navItemActive: { background: 'rgba(255,255,255,0.08)', color: '#fff' },
+    sidebarFooter: { marginTop: 'auto', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '1rem' },
+    main: { flex: 1, padding: '2rem', overflowY: 'auto' },
+    header: { marginBottom: '2rem' },
+    headerTitle: { fontSize: '1.75rem', fontWeight: 600, margin: 0 },
+    headerSubtitle: { color: 'rgba(255,255,255,0.5)', margin: '0.25rem 0 0' },
+    statsGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '1rem', marginBottom: '1.5rem' },
+    statCard: { padding: '1.25rem', borderRadius: 12, textAlign: 'center', background: '#141414', border: '1px solid rgba(255,255,255,0.08)' },
+    statNumber: { fontSize: '1.75rem', fontWeight: 600, marginBottom: '0.25rem' },
+    statLabel: { fontSize: '0.8rem', color: 'rgba(255,255,255,0.6)' },
+    filterTabs: { display: 'flex', gap: '0.5rem', marginBottom: '1.25rem' },
+    filterTab: { background: '#141414', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.6)', padding: '0.5rem 1rem', borderRadius: 6, cursor: 'pointer', fontSize: '0.8rem' },
+    filterTabActive: { background: '#3b82f6', border: 'none', color: '#fff' },
+    tableCard: { background: '#111', borderRadius: 12, padding: '1.25rem', border: '1px solid rgba(255,255,255,0.08)' },
+    tableWrapper: { overflowX: 'auto' },
+    table: { width: '100%', borderCollapse: 'collapse' },
+    th: { textAlign: 'left', padding: '0.75rem', color: 'rgba(255,255,255,0.5)', fontWeight: 500, fontSize: '0.8rem', borderBottom: '1px solid rgba(255,255,255,0.08)' },
+    tr: { borderBottom: '1px solid rgba(255,255,255,0.05)' },
+    td: { padding: '0.75rem', fontSize: '0.85rem' },
+    nameCell: { display: 'flex', alignItems: 'center', gap: '0.75rem' },
+    avatar: { width: 36, height: 36, background: '#3b82f6', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', fontWeight: 600 },
+    email: { fontSize: '0.7rem', color: 'rgba(255,255,255,0.5)' },
+    badge: { padding: '0.2rem 0.5rem', borderRadius: 4, fontSize: '0.7rem', fontWeight: 500 },
+    actions: { display: 'flex', gap: '0.4rem' },
+    approveBtn: { background: '#22c55e', border: 'none', color: '#fff', width: 26, height: 26, borderRadius: 4, cursor: 'pointer', fontSize: '0.8rem' },
+    rejectBtn: { background: '#ef4444', border: 'none', color: '#fff', width: 26, height: 26, borderRadius: 4, cursor: 'pointer', fontSize: '0.8rem' },
 };
