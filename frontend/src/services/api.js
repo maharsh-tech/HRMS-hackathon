@@ -1,4 +1,5 @@
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "";
+const API_BASE = "https://dayflow-brown.vercel.app/";
+console.log('API Service Initialized with Base URL:', API_BASE);
 
 /**
  * Health check endpoint
