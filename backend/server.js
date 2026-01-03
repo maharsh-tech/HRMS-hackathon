@@ -96,6 +96,9 @@ app.post('/api/auth/login', async (req, res) => {
         }
 
         const identifier = employeeId.trim();
+        console.log('--- LOGIN ATTEMPT ---');
+        console.log('Input:', identifier);
+        console.log('Password provided:', password ? 'YES' : 'NO');
 
         // Find user by employeeId OR email
         const user = await User.findOne({
@@ -104,6 +107,22 @@ app.post('/api/auth/login', async (req, res) => {
                 { email: identifier.toLowerCase() }
             ]
         });
+
+        console.log('User found:', user ? 'YES' : 'NO');
+        if (user) {
+            console.log('User Role:', user.role);
+            console.log('Stored Email:', user.email);
+            console.log('Stored ID:', user.employeeId);
+            const isMatch = await user.comparePassword(password);
+            console.log('Password Match:', isMatch);
+            if (!isMatch) {
+                // Return generic error but log specific
+                console.log('❌ Password mismatch');
+                return res.status(401).json({ error: 'Invalid credentials' });
+            }
+        } else {
+            console.log('❌ User not found in DB');
+        }
 
         if (!user) {
             return res.status(401).json({ error: 'Invalid credentials' });
